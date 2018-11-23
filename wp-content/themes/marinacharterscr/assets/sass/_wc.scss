@@ -1,0 +1,34 @@
+.woocommerce .woocommerce-breadcrumb, .product_meta{
+    display: none;
+}
+.woocommerce #content div.product div.images, .woocommerce div.product div.images, .woocommerce-page #content div.product div.images, .woocommerce-page div.product div.images, .woocommerce #content div.product div.summary, .woocommerce div.product div.summary, .woocommerce-page #content div.product div.summary, .woocommerce-page div.product div.summary{
+    float:none;
+    width: 100%;
+}
+
+.woocommerce div.product div.images{
+    margin-bottom: 0;
+}
+
+.woocommerce div.product p.price, .woocommerce div.product span.price{
+    color: $azul;
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+.woocommerce #respond input#submit.alt.disabled, .woocommerce #respond input#submit.alt.disabled:hover, .woocommerce #respond input#submit.alt:disabled, .woocommerce #respond input#submit.alt:disabled:hover, .woocommerce #respond input#submit.alt:disabled[disabled], .woocommerce #respond input#submit.alt:disabled[disabled]:hover, .woocommerce a.button.alt.disabled, .woocommerce a.button.alt.disabled:hover, .woocommerce a.button.alt:disabled, .woocommerce a.button.alt:disabled:hover, .woocommerce a.button.alt:disabled[disabled], .woocommerce a.button.alt:disabled[disabled]:hover, .woocommerce button.button.alt.disabled, .woocommerce button.button.alt.disabled:hover, .woocommerce button.button.alt:disabled, .woocommerce button.button.alt:disabled:hover, .woocommerce button.button.alt:disabled[disabled], .woocommerce button.button.alt:disabled[disabled]:hover, .woocommerce input.button.alt.disabled, .woocommerce input.button.alt.disabled:hover, .woocommerce input.button.alt:disabled, .woocommerce input.button.alt:disabled:hover, .woocommerce input.button.alt:disabled[disabled], .woocommerce input.button.alt:disabled[disabled]:hover,
+.woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt{
+    background-color: $azul;
+}
+.woocommerce #respond input#submit.alt:hover, .woocommerce a.button.alt:hover, .woocommerce button.button.alt:hover, .woocommerce input.button.alt:hover{
+    background-color: $azul2;
+}
+.wc-bookings-date-picker .ui-datepicker td.bookable a{
+    background-color: $turquesa !important;
+}
+.wc-bookings-date-picker .ui-datepicker td.ui-datepicker-current-day a{
+    background-color: $azul !important;
+}
+.wc-bookings-date-picker .ui-datepicker td.fully_booked a, .wc-bookings-date-picker .ui-datepicker td.fully_booked span{
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}

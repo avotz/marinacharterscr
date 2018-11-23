@@ -1,0 +1,46 @@
+// @font-face {
+//     font-family: 'av';
+//     src:    url('../../fonts/av.eot?11tzjn');
+//     src:    url('../../fonts/av.eot?11tzjn#iefix') format('embedded-opentype'),
+//         url('../../fonts/av.ttf?11tzjn') format('truetype'),
+//         url('../../fonts/av.woff?11tzjn') format('woff'),
+//         url('../../fonts/av.svg?11tzjn#icomoon') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+[class^="icon-"], [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'av' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-avotz:before {
+    content: "\e600";
+}
+
+.icon-boat{
+    background-image:url('./img/logo-icon-left.png');
+    width:90px;
+    height:40px;
+    background-size:contain;
+    display:inline-block;
+    vertical-align: middle;
+}
+.icon-boat.left{
+    background-image:url('./img/logo-icon-left.png');
+
+}
+.icon-boat.right{
+    background-image:url('./img/logo-icon-right.png');
+    
+}

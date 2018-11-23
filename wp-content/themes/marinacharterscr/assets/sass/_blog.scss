@@ -1,0 +1,106 @@
+.blog{
+	&-container{
+		background-color: white;
+		//padding-top: 4rem;
+		a{
+			&:hover{
+				text-decoration: underline;
+			}
+		}
+		h1,h2{
+			font-size: 32px;
+			text-align: left;
+			margin-bottom: 1rem;
+		}
+	}
+		
+	&-info, 
+	&-sidebar{
+		width: 100%;
+		padding: 2rem 1rem;
+		ul{ 
+			margin-left: 35px; 
+		}
+		.widget-area{
+			.widget{
+				margin-bottom: 2rem;
+				&-title{
+					margin-bottom: 0;
+					//color #000
+					font-size: 26px;
+					text-align: left;
+				}
+			}
+				
+			.widget_search{
+				.screen-reader-text,
+				.search-submit{
+					display: none;
+				}
+			}
+		}
+		.post{ 
+			border-bottom: 1px solid #ddd;
+			padding-bottom: 1rem;
+			margin-bottom: 1rem;
+		}
+		.entry-header{
+			position: relative;
+		}
+		.entry-meta{
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			background: rojo;
+			color: white;
+			padding: 0 .5rem;
+			a{ 
+				color: white;
+			}
+		}
+		.entry-content{
+			margin-top: .5rem;
+		}
+	}
+	&-sidebar{
+		padding-top: 0
+	}
+	&-banner{
+		background-size: cover; 
+		background-position: center center;
+		background-repeat: no-repeat;
+		height: 30vh;
+		position: relative;
+		margin: 0;
+		a{
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+		}
+			
+	}
+}
+	
+.search{ 
+	.search-submit{
+		margin-top: 1rem;
+	}
+}
+
+				
+@media screen and (min-width:768px){
+	.blog{
+		&-info{
+			width: 68%;
+			padding: 2rem 4rem 2rem 4rem; 
+		}
+		&-sidebar{
+			width: 30%;
+			border-left: 1px solid #ddd;
+			padding: 2rem;
+		}
+	}
+}
+	
