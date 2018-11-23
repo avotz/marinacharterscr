@@ -3,15 +3,16 @@
  * Plugin Name: WooCommerce Bookings
  * Plugin URI: https://woocommerce.com/products/woocommerce-bookings/
  * Description: Setup bookable products such as for reservations, services and hires.
- * Version: 1.11.2
+ * Version: 1.12.2
  * Author: Automattic
  * Author URI: https://woocommerce.com
  * Text Domain: woocommerce-bookings
  * Domain Path: /languages
- * WC tested up to: 3.4
+ * Tested up to: 5.0
+ * WC tested up to: 3.5
  * WC requires at least: 2.6
  *
- * Copyright: © 2009-2017 Automattic.
+ * Copyright: © 2018 Automattic.
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
@@ -46,7 +47,7 @@ class WC_Bookings {
 	 * Constructor
 	 */
 	public function __construct() {
-		define( 'WC_BOOKINGS_VERSION', '1.11.2' );
+		define( 'WC_BOOKINGS_VERSION', '1.12.2' );
 		define( 'WC_BOOKINGS_TEMPLATE_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) . '/templates/' );
 		define( 'WC_BOOKINGS_PLUGIN_URL', untrailingslashit( plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) ) );
 		define( 'WC_BOOKINGS_MAIN_FILE', __FILE__ );
@@ -79,6 +80,8 @@ class WC_Bookings {
 
 		// Init Bookings settings.
 		add_filter( 'woocommerce_general_settings', array( $this, 'init_bookings_settings' ) );
+
+		add_action( 'woocommerce_admin_field_radio_custom_label', array( $this, 'render_radio_custom_label' ) );
 
 		$this->init_cache_clearing();
 	}
@@ -679,21 +682,62 @@ KEY resource_id (resource_id)
 	 * @return array
 	 */
 	public function init_bookings_settings( $settings ) {
-		// Pop the separator.
-		$last_element = array_pop( $settings );
+		global $wp_locale;
 
 		$bookings_settings = array(
 			array(
-				'title'   => __( 'Enable Bookings Timezone calculation', 'woocommerce-bookings' ),
+				'title' => __( 'Bookings settings', 'woocommerce-bookings' ),
+				'type'  => 'title',
+				'desc'  => '',
+				'id'    => 'woocommerce_bookings_settings',
+			),
+			array(
+				'title'   => __( 'Enable Bookings Timezone Calculation', 'woocommerce-bookings' ),
 				'desc'    => __( 'Schedule Bookings events, such as reminder emails and auto-completions of bookings, using your site’s configured timezone.', 'woocommerce-bookings' ),
 				'id'      => 'woocommerce_bookings_tz_calculation',
 				'default' => 'no',
 				'type'    => 'checkbox',
 			),
+			array(
+				'type' => 'sectionend',
+				'id'   => 'woocommerce_bookings_settings',
+			),
+			array(
+				'title' => __( 'Bookings calendar settings', 'woocommerce-bookings' ),
+				'type'  => 'title',
+				'desc'  => '',
+				'id'    => 'woocommerce_bookings_calendar_settings',
+			),
+
+			array(
+				'title'    => __( 'Timezone', 'woocommerce-bookings' ),
+				'id'       => 'woocommerce_bookings_timezone_conversion',
+				'default'  => 'no',
+				'type'     => 'radio_custom_label',
+				'options'  => array(
+					'yes'  => __( 'Display visitor\'s local time', 'woocommerce-bookings' ),
+					/* translators: 1: URL to Timezone String settings 2: server timezone */
+					'no'   => sprintf( __( 'Display your local time from <a href="%1$s">WordPress settings</a> (%2$s)', 'woocommerce-bookings' ), admin_url( 'options-general.php#timezone_string' ), wc_booking_get_timezone_string() ),
+				),
+			),
+			array(
+				'title'    => __( 'Calendar start day', 'woocommerce-bookings' ),
+				'id'       => 'woocommerce_bookings_client_firstday',
+				'default'  => 'no',
+				'type'     => 'radio_custom_label',
+				'options'  => array(
+					'yes'  => __( 'Set start day from visitor\'s locale', 'woocommerce-bookings' ),
+					/* translators: 1: URL to Firstday settings 2: first day of week */
+					'no'   => sprintf( __( 'Set start day from <a href="%1$s">WordPress settings</a> (%2$s)', 'woocommerce-bookings' ), admin_url( 'options-general.php#start_of_week' ), $wp_locale->get_weekday( get_option( 'start_of_week' ) ) ),
+				),
+			),
+			array(
+				'type' => 'sectionend',
+				'id'   => 'woocommerce_bookings_calendar_settings',
+			),
 		);
 
 		$settings = array_merge( $settings, $bookings_settings );
-		$settings[] = $last_element;
 
 		return $settings;
 	}
@@ -731,6 +775,50 @@ KEY resource_id (resource_id)
 		$data_stores['product-booking-resource']    = 'WC_Product_Booking_Resource_Data_Store_CPT';
 		$data_stores['product-booking-person-type'] = 'WC_Product_Booking_Person_Type_Data_Store_CPT';
 		return $data_stores;
+	}
+
+	/**
+	 * Render a custom radio buttton field.
+	 *
+	 * Radio button field does not escape the label HTML, so hyperlinks
+	 * can be included the content.
+	 *
+	 * @since 1.11.4
+	 * @param array $value associative array of field parameters
+	 */
+	public function render_radio_custom_label( $value ) {
+		$option_value = WC_Admin_Settings::get_option( $value['id'], $value['default'] );
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $value['id'] ); ?>"><?php echo esc_html( $value['title'] ); ?></label>
+			</th>
+			<td class="forminp forminp-<?php echo esc_attr( sanitize_title( $value['type'] ) ); ?>">
+				<fieldset>
+					<ul>
+						<?php
+						foreach ( $value['options'] as $key => $val ) {
+							?>
+							<li>
+								<label><input
+										name="<?php echo esc_attr( $value['id'] ); ?>"
+										value="<?php echo esc_attr( $key ); ?>"
+										type="radio"
+										style="<?php echo esc_attr( $value['css'] ); ?>"
+										class="<?php echo esc_attr( $value['class'] ); ?>"
+										<?php checked( $key, $option_value ); ?>
+									/> <?php echo $val; ?></label>
+							</li>
+							<?php
+						}
+						?>
+					</ul>
+				</fieldset>
+			</td>
+		</tr>
+		<?php
+
 	}
 }
 

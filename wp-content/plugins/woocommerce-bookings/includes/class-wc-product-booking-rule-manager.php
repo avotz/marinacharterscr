@@ -739,14 +739,17 @@ class WC_Product_Booking_Rule_Manager {
 	 * @return bool available or not
 	 */
 	public static function check_availability_rules_against_time( $slot_start_time, $slot_end_time, $resource_id, $bookable_product, $bookable = null ) {
-		$slot_start_time = is_numeric( $slot_start_time ) ? $slot_start_time : strtotime( $slot_start_time );
-		$slot_end_time   = is_numeric( $slot_end_time ) ? $slot_end_time : strtotime( $slot_end_time );
-
-		$rules           = $bookable_product->get_availability_rules( $resource_id );
-
+		$rules = $bookable_product->get_availability_rules( $resource_id );
 		if ( is_null( $bookable ) ) {
 			$bookable = $bookable_product->get_default_availability();
 		}
+
+		if ( empty( $rules ) ) {
+			return $bookable;
+		}
+
+		$slot_start_time = is_numeric( $slot_start_time ) ? $slot_start_time : strtotime( $slot_start_time );
+		$slot_end_time   = is_numeric( $slot_end_time ) ? $slot_end_time : strtotime( $slot_end_time );
 
 		// Get the date values for the slots being checked
 		$slot_year   = intval( date( 'Y', $slot_start_time ) );
@@ -862,12 +865,13 @@ class WC_Product_Booking_Rule_Manager {
 	/**
 	 * Check a date against the availability rules
 	 *
-	 * @version 1.10.0 Moved to this class from WC_Product_Booking
-	 *                 only apply rules if within their scope
-	 *                 keep booking value alive within the loop to ensure the next rule with higher power can override
-	 * @version 1.9.14 removed all calls to break 2 to ensure we get to the highest
-	 *                 priority rules, otherwise higher order/priority rules will not
-	 *                 override lower ones and the function exit with the wrong value.
+	 * @version 1.11.3 Added woocommerce_bookings_is_date_bookable filter hook
+	 * @version 1.10.0  Moved to this class from WC_Product_Booking
+	 *                  only apply rules if within their scope
+	 *                  keep booking value alive within the loop to ensure the next rule with higher power can override
+	 * @version 1.9.14  removed all calls to break 2 to ensure we get to the highest
+	 *                  priority rules, otherwise higher order/priority rules will not
+	 *                  override lower ones and the function exit with the wrong value.
 	 *
 	 *
 	 * @param  WC_Product_Booking $bookable_product
@@ -883,7 +887,21 @@ class WC_Product_Booking_Rule_Manager {
 				$bookable = self::check_timestamp_against_rule( $check_date, $rule, $bookable );
 			}
 		}
-		return $bookable;
+
+		/**
+		 * Is date bookable hook.
+		 *
+		 * Filter allows for overriding whether or not date is bookable. Filters should return true
+		 * if bookable or false if not.
+		 *
+		 * @since 1.11.3
+		 *
+		 * @param bool $bookable available or not
+		 * @param WC_Product_Booking $bookable_product
+		 * @param int $resource_id
+		 * @param int $check_date timestamp
+		 */
+		return apply_filters( 'woocommerce_bookings_is_date_bookable', $bookable, $bookable_product, $resource_id, $check_date );
 	}
 
 	/**

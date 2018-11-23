@@ -32,35 +32,18 @@ class WC_Booking_Form_Date_Picker extends WC_Booking_Form_Picker {
 		$this->args['duration_unit']           = $this->booking_form->product->get_duration_unit();
 		$this->args['is_range_picker_enabled'] = $this->booking_form->product->is_range_picker_enabled();
 		$this->args['display']                 = $this->booking_form->product->get_calendar_display_mode();
-		$this->args['availability_rules']      = array();
-		$this->args['availability_rules'][0]   = $this->booking_form->product->get_availability_rules();
 		$this->args['label']                   = $this->get_field_label( __( 'Date', 'woocommerce-bookings' ) );
 		$this->args['product_type']            = $this->booking_form->product->get_type();
-		$this->args['restricted_days']         = $this->booking_form->product->has_restricted_days() ? $this->booking_form->product->get_restricted_days() : false;
-
-		if ( $this->booking_form->product->has_resources() ) {
-			foreach ( $this->booking_form->product->get_resources() as $resource ) {
-				$this->args['availability_rules'][ $resource->ID ] = $this->booking_form->product->get_availability_rules( $resource->ID );
-			}
-		}
-
-		$fully_booked_blocks = $this->find_fully_booked_blocks();
-		$buffer_blocks       = $this->find_buffer_blocks( $fully_booked_blocks['fully_booked_days'] );
-
-		$this->args = array_merge( $this->args, $fully_booked_blocks, $buffer_blocks );
-
-		$this->args['default_date'] = date( 'Y-m-d', $this->get_default_date( $fully_booked_blocks, $buffer_blocks ) );
+		$this->args['default_date']            = date( 'Y-m-d', $this->get_default_date() );
 	}
 
 	/**
 	 * Attempts to find what date to default to in the date picker
 	 * by looking at the fist available block. Otherwise, the current date is used.
 	 *
-	 * @param  array $fully_booked_blocks
-	 * @param  array $buffer_blocks
 	 * @return int Timestamp
 	 */
-	function get_default_date( $fully_booked_blocks, $buffer_blocks = array() ) {
+	public function get_default_date() {
 
 		/**
 		 * Filter woocommerce_bookings_override_form_default_date
@@ -88,122 +71,60 @@ class WC_Booking_Form_Date_Picker extends WC_Booking_Form_Picker {
 		 */
 
 		if ( ! apply_filters( 'wc_bookings_calendar_default_to_current_date', true ) ) {
+			/*
+			 * Handles the case where a user can set all dates to be not-available by default.
+			 * Also they add an availability rule where they are bookable at a future date in time.
+			 */
 
-			$booked_dates = array_keys( array_merge( $fully_booked_blocks['fully_booked_days'], $fully_booked_blocks['unavailable_days'] ) );
+			$now      = strtotime( 'midnight', current_time( 'timestamp' ) );
+			$min      = $this->booking_form->product->get_min_date();
+			$max      = $this->booking_form->product->get_max_date();
+			$min_date = strtotime( 'midnight' );
 
-			if ( isset( $buffer_blocks ) && isset( $buffer_blocks['buffer_days'] ) ) {
-				$booked_dates = array_merge( $booked_dates, array_keys( $buffer_blocks['buffer_days'] ) );
+			if ( ! empty( $min ) ) {
+				$min_date = strtotime( "+{$min['value']} {$min['unit']}", $now );
 			}
 
-			if ( ! empty( $booked_dates ) ) {
+			/*
+			 * Handling months differently due to performance impact it has. Get it in three
+			 * months batches to ensure we can exit when we find the first one without going
+			 * through all 12 months.
+			 */
+			for ( $i = 1 ; $i <= $max['value'] ; $i += 3 ) {
 
-				$default_date = $this->find_first_bookable_date( $booked_dates );
+				/*
+				 * $min_date calculated above first.
+				 * Only add months up to the max value.
+				 */
+				$range_end_increment = ( $i + 3 ) > $max['value'] ? $max['value'] : ( $i + 3 );
+				$max_date            = strtotime( "+ $range_end_increment month", $now );
+				$blocks_in_range     = $this->booking_form->product->get_blocks_in_range( $min_date, $max_date );
+				$last_element        = end( $blocks_in_range );
 
-			} else {
+				reset( $blocks_in_range ); // restore the internal pointer.
 
-				// Handles the case where a user can set all dates to be not-available by default
-				// Also they add an availability rule where they are bookable at a future date in time
-
-				$now      = strtotime( 'midnight', current_time( 'timestamp' ) );
-				$min      = $this->booking_form->product->get_min_date();
-				$max      = $this->booking_form->product->get_max_date();
-				$min_date = strtotime( 'midnight' );
-
-				if ( ! empty( $min ) ) {
-					$min_date = strtotime( "+{$min['value']} {$min['unit']}", $now );
+				if ( ! empty( $blocks_in_range ) && $blocks_in_range[0] > $last_element ) {
+					/*
+					 * In certain cases the starting date is at the end
+					 * `product->get_available_blocks` expects it to be at the beginning.
+					 */
+					$blocks_in_range = array_reverse( $blocks_in_range );
 				}
 
-				// handling months differently due to performance impact it has
-				// get it in three months batches to ensure
-				// we can exit when we find the first one without going through all 12 months
-				for ( $i = 1 ; $i <= $max['value'] ; $i += 3 ) {
+				$available_blocks = $this->booking_form->product->get_available_blocks( array(
+					'blocks' => $blocks_in_range,
+				) );
 
-					// $min_date calculated above first.
-					// only add months up to the max value
-					$range_end_increment = ( $i + 3 ) > $max['value'] ? $max['value'] : ( $i + 3 );
-					$max_date            = strtotime( "+ $range_end_increment month", $now );
-					$blocks_in_range     = $this->booking_form->product->get_blocks_in_range( $min_date, $max_date );
-					$last_element        = end( $blocks_in_range );
+				if ( ! empty( $available_blocks[0] ) ) {
+					$default_date = $available_blocks[0];
+					break;
+				} // else continue with loop until we get a default date where the calendar can start at.
 
-					reset( $blocks_in_range ); // restore the internal pointer.
-
-					if ( $blocks_in_range[0] > $last_element ) {
-						// in certain cases the starting date is at the end
-						// product->get_available_blocks expects it to be at the beginning
-						$blocks_in_range = array_reverse( $blocks_in_range );
-					}
-
-					$available_blocks = $this->booking_form->product->get_available_blocks( array(
-						'blocks' => $blocks_in_range,
-					) );
-
-					if ( ! empty( $available_blocks[0] ) ) {
-						$default_date = $available_blocks[0];
-						break;
-					} // else continue with loop until we get a default date where the calendar can start at.
-
-					$min_date = strtotime( '+' . $i . ' month', $now );
-				}
+				$min_date = strtotime( '+' . $i . ' month', $now );
 			}
 		}
 
 		return $default_date;
 	}
 
-	/**
-	 * Find the first bookable date from an array of dates
-	 * @param array $dates An array of dates to search
-	 *
-	 * @return The first bookable date
-	 */
-	private function find_first_bookable_date( $dates ) {
-
-		// Converting dates into a timestamp because find_booked_day_blocks is
-		// formatting dates without leading zeros which can cause max to return the
-		// wrong date. We can remove this once leading zeroes are added to the date format.
-		//
-		// e.g. max( array( '2017-11-9', '2017-11-30' ) ) will return 2017-11-9 as the max date
-		$dates = array_map( function( $item ) {
-			return strtotime( $item );
-		}, $dates );
-
-		$current_date     = strtotime( 'midnight' );
-		$last_booked_date = max( $dates );
-		$bookable_date    = strtotime( '+1 day', $last_booked_date );
-
-		while ( $current_date < $last_booked_date ) {
-			if ( ! in_array( $current_date, $dates ) ) {
-				$bookable_date = $current_date;
-				break;
-			}
-			$current_date = strtotime( '+1 day', $current_date );
-		}
-
-		return $bookable_date;
-
-	}
-
-	/**
-	 * Find days which are buffer days so they can be grayed out on the date picker
-	 */
-	protected function find_buffer_blocks( $fully_booked_days ) {
-		$buffer_days = WC_Bookings_Controller::get_buffer_day_blocks_for_booked_days( $this->booking_form->product, $fully_booked_days );
-
-		return array(
-			'buffer_days' => $buffer_days,
-		);
-	}
-
-	/**
-	 * Finds days which are fully booked already so they can be blocked on the date picker
-	 */
-	protected function find_fully_booked_blocks() {
-		$booked = WC_Bookings_Controller::find_booked_day_blocks( $this->booking_form->product->get_id() );
-
-		return array(
-			'partially_booked_days' => $booked['partially_booked_days'],
-			'fully_booked_days'     => $booked['fully_booked_days'],
-			'unavailable_days'      => $booked['unavailable_days'],
-		);
-	}
 }

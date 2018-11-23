@@ -29,6 +29,7 @@ class WC_Booking extends WC_Bookings_Data {
 		'resource_id'              => 0,
 		'start'                    => '',
 		'status'                   => 'unpaid',
+		'local_timezone'           => '',
 	);
 
 	/**
@@ -349,10 +350,18 @@ class WC_Booking extends WC_Bookings_Data {
 	 * Get end_time.
 	 *
 	 * @param  string $context
+	 * @param  bool   $local
 	 * @return int
 	 */
-	public function get_end( $context = 'view', $deprecated = '' ) {
+	public function get_end( $context = 'view', $local = false ) {
 		$end = $this->get_prop( 'end', $context );
+
+		if ( $local ) {
+			$maybe_localized_date = $this->get_localized_date( $end );
+			if ( ! empty( $maybe_localized_date ) ) {
+				$end = $maybe_localized_date;
+			}
+		}
 
 		return $this->is_all_day() ? strtotime( 'midnight +1 day -1 second', $end ) : $end;
 	}
@@ -504,10 +513,18 @@ class WC_Booking extends WC_Bookings_Data {
 	 * Get start_time.
 	 *
 	 * @param  string $context
+	 * @param  bool   $local
 	 * @return int
 	 */
-	public function get_start( $context = 'view', $deprecated = '' ) {
+	public function get_start( $context = 'view', $local = false ) {
 		$start = $this->get_prop( 'start', $context );
+
+		if ( $local ) {
+			$maybe_localized_date = $this->get_localized_date( $start );
+			if ( ! empty( $maybe_localized_date ) ) {
+				$start = $maybe_localized_date;
+			}
+		}
 
 		return $this->is_all_day() ? strtotime( 'midnight', $start ) : $start;
 	}
@@ -556,6 +573,26 @@ class WC_Booking extends WC_Bookings_Data {
 		);
 	}
 
+	/**
+	 * Get local_timezone.
+	 *
+	 * @param  string $context
+	 * @return string
+	 */
+	public function get_local_timezone( $context = 'view' ) {
+		return $this->get_prop( 'local_timezone', $context );
+	}
+
+	/**
+	 * Set local_timezone.
+	 *
+	 * @param string $timestamp
+	 * @throws WC_Data_Exception
+	 */
+	public function set_local_timezone( $timezone ) {
+		$this->set_prop( 'local_timezone', $timezone );
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Conditonals
@@ -598,6 +635,8 @@ class WC_Booking extends WC_Bookings_Data {
 	 * @return boolean
 	 */
 	public function is_booked_on_day( $block_start, $block_end ) {
+		_deprecated_function( __METHOD__, '1.12.2' );
+
 		$is_booked        = false;
 		$loop_date        = $this->get_start();
 		$multiday_booking = date( 'Y-m-d', $this->get_start() ) < date( 'Y-m-d', $this->get_end() );
@@ -681,8 +720,8 @@ class WC_Booking extends WC_Bookings_Data {
 	 *
 	 * @return string Date formatted via date_i18n
 	 */
-	public function get_start_date( $date_format = null, $time_format = null ) {
-		if ( $this->get_start() ) {
+	public function get_start_date( $date_format = null, $time_format = null, $local = false ) {
+		if ( $this->get_start( 'view', $local ) ) {
 			if ( is_null( $date_format ) ) {
 				$date_format = apply_filters( 'woocommerce_bookings_date_format', wc_date_format() );
 			}
@@ -690,9 +729,9 @@ class WC_Booking extends WC_Bookings_Data {
 				$time_format = apply_filters( 'woocommerce_bookings_time_format', ', ' . wc_time_format() );
 			}
 			if ( $this->is_all_day() ) {
-				return date_i18n( $date_format, $this->get_start() );
+				return date_i18n( $date_format, $this->get_start( 'view', $local ) );
 			} else {
-				return apply_filters( 'woocommerce_bookings_get_start_date_with_time', date_i18n( $date_format . $time_format, $this->get_start() ), $this );
+				return apply_filters( 'woocommerce_bookings_get_start_date_with_time', date_i18n( $date_format . $time_format, $this->get_start( 'view', $local ) ), $this );
 			}
 		}
 		return false;
@@ -703,8 +742,8 @@ class WC_Booking extends WC_Bookings_Data {
 	 *
 	 * @return string Date formatted via date_i18n
 	 */
-	public function get_end_date( $date_format = null, $time_format = null ) {
-		if ( $this->get_end() ) {
+	public function get_end_date( $date_format = null, $time_format = null, $local = false ) {
+		if ( $this->get_end( 'view', $local ) ) {
 			if ( is_null( $date_format ) ) {
 				$date_format = apply_filters( 'woocommerce_bookings_date_format', wc_date_format() );
 			}
@@ -712,9 +751,9 @@ class WC_Booking extends WC_Bookings_Data {
 				$time_format = apply_filters( 'woocommerce_bookings_time_format', ', ' . wc_time_format() );
 			}
 			if ( $this->is_all_day() ) {
-				return date_i18n( $date_format, $this->get_end() );
+				return date_i18n( $date_format, $this->get_end( 'view', $local ) );
 			} else {
-				return apply_filters( 'woocommerce_bookings_get_end_date_with_time', date_i18n( $date_format . $time_format, $this->get_end() ), $this );
+				return apply_filters( 'woocommerce_bookings_get_end_date_with_time', date_i18n( $date_format . $time_format, $this->get_end( 'view', $local ) ), $this );
 			}
 		}
 		return false;
@@ -817,19 +856,19 @@ class WC_Booking extends WC_Bookings_Data {
 	 * @return bool Whether schedule was done or not.
 	 */
 	public function maybe_schedule_event( $type ) {
-		$tz_addition = 'yes' !== get_option( 'woocommerce_bookings_tz_calculation' ) ? 0 : - wc_booking_timezone_offset();
+		$timezone_addition = 'yes' !== get_option( 'woocommerce_bookings_tz_calculation' ) ? 0 : - wc_booking_timezone_offset();
 
 		switch ( $type ) {
 			case 'reminder':
 				if ( $this->get_start() ) {
 					wp_clear_scheduled_hook( 'wc-booking-reminder', array( $this->get_id() ) );
-					return is_null( wp_schedule_single_event( $tz_addition + strtotime( '-' . absint( apply_filters( 'woocommerce_bookings_remind_before_days', 1 ) ) . ' day', $this->get_start() ), 'wc-booking-reminder', array( $this->get_id() ) ) );
+					return is_null( wp_schedule_single_event( $timezone_addition + strtotime( '-' . absint( apply_filters( 'woocommerce_bookings_remind_before_days', 1 ) ) . ' day', $this->get_start() ), 'wc-booking-reminder', array( $this->get_id() ) ) );
 				}
 				break;
 			case 'complete':
 				if ( $this->get_end() ) {
 					wp_clear_scheduled_hook( 'wc-booking-complete', array( $this->get_id() ) );
-					return is_null( wp_schedule_single_event( $tz_addition + $this->get_end(), 'wc-booking-complete', array( $this->get_id() ) ) );
+					return is_null( wp_schedule_single_event( $timezone_addition + $this->get_end(), 'wc-booking-complete', array( $this->get_id() ) ) );
 				}
 		}
 
@@ -978,5 +1017,32 @@ class WC_Booking extends WC_Bookings_Data {
 		} else {
 			return get_post_meta( $this->get_id(), '_' . $key, true );
 		}
+	}
+
+	/**
+	 * Get date localized to client timezone.
+	 *
+	 * @param  int $date timestamp to convert.
+	 * @return string|null datetime string in client's timezone.
+	 */
+	public function get_localized_date( $date ) {
+		$localized_date = null;
+
+		// Timezone may not exist so wrap it in a try/catch block
+		try {
+			$local_timezone = new DateTimeZone( $this->get_local_timezone() );
+			$server_timezone = wc_booking_get_timezone_string();
+
+			// Create DateTime in server's timezone (otherwise UTC is assumed).
+			$dt = new DateTime( date( 'Y-m-d\TH:i:s', $date ), new DateTimeZone( $server_timezone ) );
+			$dt->setTimezone( $local_timezone );
+
+			// Calling simply `getTimestamp` will not calculate the timezone.
+			$localized_date = strtotime( $dt->format( 'Y-m-d H:i:s' ) );
+		} catch ( Exception $e ) {
+			return null;
+		}
+
+		return $localized_date;
 	}
 }

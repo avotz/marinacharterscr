@@ -238,7 +238,7 @@ class WC_Bookings_Google_Calendar_Integration extends WC_Integration {
 			);
 
 			$params = array(
-				'body'      => http_build_query( $data ),
+				'body'      => http_build_query( $data, '', '&' ),
 				'sslverify' => false,
 				'timeout'   => 60,
 				'headers'   => array(
@@ -280,7 +280,7 @@ class WC_Bookings_Google_Calendar_Integration extends WC_Integration {
 			);
 
 			$params = array(
-				'body'      => http_build_query( $data ),
+				'body'      => http_build_query( $data, '', '&' ),
 				'sslverify' => false,
 				'timeout'   => 60,
 				'headers'   => array(
@@ -359,7 +359,6 @@ class WC_Bookings_Google_Calendar_Integration extends WC_Integration {
 			if ( 'yes' === $this->debug ) {
 				$this->log->add( $this->id, 'Google calendar request successful!' );
 			}
-
 		} elseif ( 'yes' === $this->debug ) {
 
 			$this->log->add( $this->id, 'Error while making Google Calendar request for ' . $api_url . ': ' . print_r( $response, true ) );
@@ -547,14 +546,13 @@ class WC_Bookings_Google_Calendar_Integration extends WC_Integration {
 			$response  = $this->make_gcal_request( $api_url, $params );
 			$json_data = json_decode( $response['body'], true );
 
-		} catch( Exception $e ) {
+		} catch ( Exception $e ) {
 
 			$json_data = false;
 
 			if ( 'yes' === $this->debug ) {
 				$this->log->add( $this->id, 'Error while getting data for ' . $api_url . ': ' . print_r( $response, true ) );
 			}
-
 		}
 
 		return $json_data;
@@ -599,9 +597,9 @@ class WC_Bookings_Google_Calendar_Integration extends WC_Integration {
 
 		if ( is_a( $order, 'WC_Order' ) ) {
 
-			foreach( $order->get_items() as $order_item ) {
+			foreach ( $order->get_items() as $order_item ) {
 
-				foreach( $order_item->get_meta_data() as $order_meta_data ) {
+				foreach ( $order_item->get_meta_data() as $order_meta_data ) {
 
 					$the_meta_data = $order_meta_data->get_data();
 
@@ -612,17 +610,15 @@ class WC_Bookings_Google_Calendar_Integration extends WC_Integration {
 					$description .= sprintf( '%s: %s', html_entity_decode( $the_meta_data['key'] ), html_entity_decode( $the_meta_data['value'] ) ) . PHP_EOL;
 
 				}
-
 			}
-
 		}
 
 		if ( $event_id ) {
 			$response_data = $this->sync_event_resource( $booking_id, array(
 				'method'      => 'GET',
 				'querystring' => array(
-					'fields' => 'description'
-				)
+					'fields' => 'description',
+				),
 			) );
 
 			$description_does_exist      = isset( $response_data['description'] ) && ( '' !== trim( $response_data['description'] ) );
@@ -632,7 +628,6 @@ class WC_Bookings_Google_Calendar_Integration extends WC_Integration {
 			if ( $description_does_exist && $description_has_been_edited ) {
 				$description = $response_data['description'];
 			}
-
 		}
 
 		// Set the event data
@@ -665,7 +660,7 @@ class WC_Bookings_Google_Calendar_Integration extends WC_Integration {
 		}
 
 		$response_data = $this->sync_event_resource( $booking_id, array(
-			'method' => ( $event_id ) ? 'PUT' : 'POST'
+			'method' => ( $event_id ) ? 'PUT' : 'POST',
 		), $data );
 
 		$booking->set_google_calendar_event_id( wc_clean( $response_data['id'] ) );

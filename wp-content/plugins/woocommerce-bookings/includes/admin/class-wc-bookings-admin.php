@@ -60,6 +60,12 @@ class WC_Bookings_Admin {
 				'desc'     => __( 'This tool will clean the person types that are not used by any booking or a product.', 'woocommerce-bookings' ),
 				'callback' => array( 'WC_Bookings_Tools', 'clean_person_types' ),
 			),
+			'clear_expired_in_cart_bookings' => array(
+				'name'     => __( 'Clear expired In Cart bookings', 'woocommerce-bookings' ),
+				'button'   => __( 'Clear', 'woocommerce-bookings' ),
+				'desc'     => __( 'This tool will clear all expired In Cart bookings.', 'woocommerce-bookings' ),
+				'callback' => array( 'WC_Bookings_Tools', 'remove_in_cart_bookings' ),
+			),
 		);
 
 		return array_merge( $tools, $bookings_tools );

@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WooCommerce - WooCommerce Bookings - Latest package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2018-03-06 06:07:41+0000\n"
+"PO-Revision-Date: 2018-08-25 06:28:03+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28,11 +28,11 @@ msgstr "ゲスト (%s)"
 
 #: woocommerce-bookings.php:647
 msgid "Schedule Bookings events, such as reminder emails and auto-completions of bookings, using your site’s configured timezone."
-msgstr ""
+msgstr "サイトの設定されたタイムゾーンを使用して、予約メールや予約の自動補完などの予約イベントをスケジュールします。"
 
 #: woocommerce-bookings.php:646
 msgid "Enable Bookings Timezone calculation"
-msgstr ""
+msgstr "予約のタイムゾーン計算を有効化"
 
 #: woocommerce-bookings.php:485
 msgid "Partially Paid <span class=\"count\">(%s)</span>"
@@ -45,16 +45,16 @@ msgstr "%d人"
 
 #: templates/order/booking-display.php:41
 msgid "View my bookings &rarr;"
-msgstr ""
+msgstr "予約を表示 &rarr;"
 
 #: templates/order/admin/booking-display.php:31
 #: templates/order/booking-display.php:33
 msgid "Booking #%s"
-msgstr ""
+msgstr "予約番号%s"
 
 #: templates/emails/admin-booking-cancelled.php:26
 msgid "The following booking has been cancelled. The details of the cancelled booking can be found below."
-msgstr ""
+msgstr "次の予約はキャンセルされました。 キャンセルされた予約の詳細は以下の通りです。"
 
 #: includes/wc-bookings-functions.php:202
 msgid "In Cart"
@@ -108,7 +108,7 @@ msgstr "未払い"
 
 #: includes/data-stores/class-wc-product-booking-person-type-data-store-cpt.php:51
 msgid "Invalid booking person type."
-msgstr ""
+msgstr "無効な予約するお客様の種類"
 
 #: includes/data-objects/class-wc-product-booking.php:1514
 #: includes/data-objects/class-wc-product-booking.php:1520
@@ -137,7 +137,7 @@ msgstr ""
 
 #: includes/class-wc-bookings-ics-exporter.php:186
 msgid "%1$s: %2$d"
-msgstr ""
+msgstr "%1$s: %2$d"
 
 #: includes/booking-form/class-wc-booking-form.php:565
 msgid "Sorry, bookings cannot start on this day."
@@ -221,7 +221,7 @@ msgstr ""
 
 #: includes/admin/class-wc-bookings-admin.php:60
 msgid "This tool will clean the person types that are not used by any booking or a product."
-msgstr ""
+msgstr "このツールは、予約や商品によって使用されていないお客様の種類をきれいにします。"
 
 #: includes/admin/class-wc-bookings-admin.php:59
 msgid "Clean Person Types"
@@ -452,7 +452,7 @@ msgstr "予約可能なリソース"
 
 #: woocommerce-bookings.php:321
 msgid "Person Type"
-msgstr "人の種類"
+msgstr "お客様の種類"
 
 #: templates/single-product/add-to-cart/booking.php:31
 msgid "Your browser must support JavaScript in order to make a booking."
@@ -1577,7 +1577,7 @@ msgstr "時間の範囲"
 
 #: includes/admin/views/html-booking-persons.php:89
 msgid "Add Person Type"
-msgstr "人の種類を追加"
+msgstr "お客様の種類を追加"
 
 #: includes/admin/views/html-booking-persons.php:61
 #: includes/admin/views/html-booking-resources.php:33
@@ -1591,7 +1591,7 @@ msgstr "すべて閉じる"
 
 #: includes/admin/views/html-booking-persons.php:60
 msgid "Person types"
-msgstr "人の種類"
+msgstr "お客様の種類"
 
 #: includes/admin/views/html-booking-persons.php:50
 #: includes/admin/views/html-booking-persons.php:72

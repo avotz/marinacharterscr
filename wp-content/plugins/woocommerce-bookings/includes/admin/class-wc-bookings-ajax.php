@@ -158,7 +158,7 @@ class WC_Bookings_Ajax {
 		if ( ! $product ) {
 			wp_send_json( array(
 				'result' => 'ERROR',
-				'html'   => apply_filters( 'woocommerce_bookings_calculated_booking_cost_success_output', '<span class="booking-error">' . __( 'This booking is unavailable.', 'woocommerce-bookings' ) . '</span>', null, null ),
+				'html'   => apply_filters( 'woocommerce_bookings_calculated_booking_cost_error_output', '<span class="booking-error">' . __( 'This booking is unavailable.', 'woocommerce-bookings' ) . '</span>', null, null ),
 			) );
 		}
 
@@ -168,7 +168,7 @@ class WC_Bookings_Ajax {
 		if ( is_wp_error( $cost ) ) {
 			wp_send_json( array(
 				'result' => 'ERROR',
-				'html'   => apply_filters( 'woocommerce_bookings_calculated_booking_cost_success_output', '<span class="booking-error">' . $cost->get_error_message() . '</span>', $cost, $product ),
+				'html'   => apply_filters( 'woocommerce_bookings_calculated_booking_cost_error_output', '<span class="booking-error">' . $cost->get_error_message() . '</span>', $cost, $product ),
 			) );
 		}
 
@@ -249,7 +249,16 @@ class WC_Bookings_Ajax {
 
 		$first_block_time     = $product->get_first_block_time();
 		$from                 = strtotime( $first_block_time ? $first_block_time : 'midnight', $timestamp );
-		$to                   = strtotime( '+ 1 day', $from ) + $interval;
+		$standard_from        = $from;
+
+		// Get an extra day before/after so front-end can get enough blocks to fill out 24 hours in client time.
+		if ( isset( $posted['get_prev_day'] ) ) {
+			$from = strtotime( '- 1 day', $from );
+		}
+		$to = strtotime( '+ 1 day', $standard_from ) + $interval;
+		if ( isset( $posted['get_next_day'] ) ) {
+			$to = strtotime( '+ 1 day', $to );
+		}
 
 		// cap the upper range
 		$to                   = strtotime( 'midnight', $to ) - 1;

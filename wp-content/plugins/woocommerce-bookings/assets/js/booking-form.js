@@ -78,6 +78,11 @@ jQuery(document).ready(function($) {
 						$form.find('.wc-bookings-booking-cost').html( result.html );
 						$form.find('.wc-bookings-booking-cost').unblock();
 						$form.find('.single_add_to_cart_button').removeClass('disabled');
+
+						if ( booking_form_params.pao_active && 'true' !== booking_form_params.pao_pre_30 && typeof result.raw_price !== 'undefined' ) {
+							$form.find( '.wc-bookings-booking-cost' ).attr( 'data-raw-price', result.raw_price );
+							$( 'form.cart' ).trigger( 'woocommerce-product-addons-update' );
+						}
 					} else {
 						$form.find('.wc-bookings-booking-cost').hide();
 						$form.find('.single_add_to_cart_button').addClass('disabled');
@@ -89,6 +94,10 @@ jQuery(document).ready(function($) {
 				error: function() {
 					$form.find('.wc-bookings-booking-cost').hide();
 					$form.find('.single_add_to_cart_button').addClass('disabled');
+
+					if ( booking_form_params.pao_active && 'true' !== booking_form_params.pao_pre_30 ) {
+						$( 'form.cart' ).trigger( 'woocommerce-product-addons-update' );
+					}
 				},
 				dataType: 	"html"
 			});
@@ -107,6 +116,27 @@ jQuery(document).ready(function($) {
 		}
 	})
 
+	if ( 'true' === booking_form_params.pao_pre_30 ) {
+		$( '.wc-bookings-booking-form' ).parent()
+			.on( 'updated_addons', function() {
+				$( '.wc-bookings-booking-form' ).find( 'input' ).first().trigger( 'change' );
+			} );
+	}
+
 	$('.wc-bookings-booking-form, .wc-bookings-booking-form-button').show().removeAttr( 'disabled' );
 
 });
+
+function get_client_server_timezone_offset_hrs( date ) {
+	if ( ! booking_form_params.timezone_conversion ) {
+		return 0;
+	}
+
+	var reference_time = moment( date );
+	var client_offset = reference_time.utcOffset();
+	reference_time.tz( booking_form_params.server_timezone );
+	var server_offset = reference_time.utcOffset();
+
+	return (client_offset - server_offset)/60;
+}
+

@@ -4,7 +4,8 @@
 wc_bookings_date_picker = {};
 
 jQuery( function( $ ) {
-	var wc_bookings_timeout      = 0,
+	var wc_bookings_locale              = window.navigator.userLanguage || window.navigator.language,
+		wc_bookings_timeout             = 0,
 		wc_bookings_date_picker_object  = {
 		init: function() {
 			$( 'body' ).on( 'click', '.wc-bookings-date-picker legend small.wc-bookings-date-picker-choose-date', this.toggle_calendar );
@@ -205,7 +206,7 @@ jQuery( function( $ ) {
 				dayNames: WC_DatePicker.get_custom_data( 'dayNames' ),
 				dayNamesShort: WC_DatePicker.get_custom_data( 'dayNamesShort' ),
 				dayNamesMin: WC_DatePicker.get_custom_data( 'dayNamesMin' ),
-				firstDay: WC_DatePicker.get_custom_data( 'firstDay' ),
+				firstDay: booking_form_params.client_firstday ? moment().localeData().firstDayOfWeek() : WC_DatePicker.get_custom_data( 'firstDay' ),
 				isRTL: WC_DatePicker.get_custom_data( 'isRTL' ),
 				beforeShowDay: WC_DatePicker.maybe_load_from_cache.bind( WC_DatePicker ),
 				onChangeMonthYear: function( year, month ) {
@@ -489,7 +490,7 @@ jQuery( function( $ ) {
 
 	/**
 	 * Represents a jQuery UI DatePicker.
-	 * 
+	 *
 	 * @constructor
 	 * @version 1.10.11
 	 * @since   1.10.11
@@ -520,11 +521,11 @@ jQuery( function( $ ) {
 		if ( this.customData.cache_ajax_requests && ( 'true' == this.customData.cache_ajax_requests.toLowerCase() || 'false' == this.customData.cache_ajax_requests.toLowerCase() ) ) {
 			this.opts.cache = 'true' == this.customData.cache_ajax_requests.toLowerCase();
 		}
-	
+
 		if ( ! this.$picker.length ) {
 			return;
 		}
-	
+
 	}
 
 	/**
@@ -550,28 +551,36 @@ jQuery( function( $ ) {
 			this.$picker.datepicker( 'setDate', new Date( year, month - 1, day ) );
 		}
 
-		this.get_data()
+		var picker_month = this.$picker.datepicker('getDate').getMonth() + 1;
+		var picker_year = this.$picker.datepicker('getDate').getFullYear();
+
+		this.get_data( picker_year, picker_month )
 			.done( this.applyStylesToDates );
-	
+
 	}
 
 	/**
 	 * Applys attributes to the dates on the datepicker. This is necessary since we cant
 	 * defer beforeShowDay until after our data is loaded.
-	 * 
+	 *
 	 * @version 1.10.11
 	 * @since   1.10.11
 	 * @param   {object} dateRange - Date range for attributes to be applied to.
 	 */
 	WC_Bookings_DatePicker.prototype.applyStylesToDates = function applyStylesToDates( dateRange ) {
+		/*
+		 * Offset for dates to avoid comparing them at midnight. Browsers are inconsistent with how they
+		 * handle midnight time right before a DST time change.
+		 */
+		var HOUR_OFFSET = 12;
 
+		dateRange.startDate.setHours( HOUR_OFFSET );
+		dateRange.endDate.setHours( HOUR_OFFSET );
 		var checkDate = dateRange.startDate;
 
 		while ( checkDate < dateRange.endDate ) {
 
-			var cacheKey = btoa( checkDate.toString().replace( /[\u00A0-\u2666]/g, function( c ) {
-				return '&#' + c.charCodeAt( 0 ) + ';';
-			} ) );
+			var cacheKey = checkDate.getTime();
 
 			if ( ! this.cache.attributes[ cacheKey ] ) {
 
@@ -585,16 +594,16 @@ jQuery( function( $ ) {
 					attributes.class.push( 'ui-state-disabled' );
 				}
 
-				if ( checkDate.setHours( 0, 0, 0, 0 ) === new Date().setHours( 0, 0, 0, 0 ) ) {
+				if ( checkDate.setHours( HOUR_OFFSET, 0, 0, 0 ) === new Date().setHours( HOUR_OFFSET, 0, 0, 0 ) ) {
 					attributes.class.push( 'ui-datepicker-today' );
 				}
 
 				$.each( attributes, function( key, val ) {
-					
+
 					selector.attr( key, ( $.isArray( val ) ) ? val.join( ' ' ) : val );
 
 				});
-				
+
 				if ( this.opts.cache ) {
 					this.cache.attributes[ cacheKey ] = attributes;
 				}
@@ -616,9 +625,7 @@ jQuery( function( $ ) {
 	 */
 	WC_Bookings_DatePicker.prototype.maybe_load_from_cache = function maybe_load_from_cache( date ) {
 
-		var cacheKey = btoa( date.toString().replace( /[\u00A0-\u2666]/g, function( c ) {
-			return '&#' + c.charCodeAt( 0 ) + ';';
-		} ) );
+		var cacheKey = date.getTime();
 
 		var defaultClass		= ( '1' === this.customData.default_availability ) ? 'bookable' : 'not-bookable' ;
 		var attributes			= [ true, defaultClass, '' ];
@@ -649,7 +656,7 @@ jQuery( function( $ ) {
 
 	/**
 	 * Set and override the default parameters.
-	 * 
+	 *
 	 * @version 1.10.11
 	 * @since   1.10.11
 	 * @param   {object} params - Parameters to be set or overridden.
@@ -666,7 +673,7 @@ jQuery( function( $ ) {
 			gotoCurrent			: true,
 			dateFormat			: $.datepicker.ISO_8601,
 		}
-		
+
 		if ( typeof params !== 'object' ) {
 			throw new Error( 'Cannot set params with typeof ' + typeof params );
 			return;
@@ -675,19 +682,16 @@ jQuery( function( $ ) {
 		this.defaultParams = $.extend( _defaultParams, params ) || {};
 
 	}
-	
+
 	/**
 	 * Get the data from the server for a block of time.
-	 * 
+	 *
 	 * @since   1.10.11
 	 * @param   {string} year - Year being requested.
 	 * @param   {string} month - Month being requested.
 	 * @returns {object} Deferred object to be resolved after the http request
 	 */
 	WC_Bookings_DatePicker.prototype.get_data = function get_data( year, month ) {
-		year  = undefined !== year  ? year  : new Date().getFullYear();
-		month = undefined !== month ? month : new Date().getMonth() + 1;
-
 		/**
 		 * Overlay styles when jQuery.block is called to block the DOM.
 		 */
@@ -713,21 +717,11 @@ jQuery( function( $ ) {
 			return this.get_padded_date_range( startDate, range );
 
 		}.bind(this);
-		
+
 		var deferred	= $.Deferred();
 		var dateRange   = get_date_range();
 
-		startDateString = dateRange.startDate.toString()
-		startDateString = btoa( startDateString.replace( /[\u00A0-\u2666]/g, function( c ) {
-			return '&#' + c.charCodeAt( 0 ) + ';';
-		} ) );
-
-		endDateString = dateRange.endDate.toString();
-		endDateString = btoa( endDateString.replace( /[\u00A0-\u2666]/g, function( c ) {
-			return '&#' + c.charCodeAt( 0 ) + ';';
-		} ) );
-
-		var cacheKey	= startDateString + endDateString;
+		var cacheKey	= dateRange.startDate.getTime() + '-' + dateRange.endDate.getTime();
 
 		if ( this.opts.cache && this.cache.data[ cacheKey ] ) {
 
@@ -746,8 +740,12 @@ jQuery( function( $ ) {
 				overlayCSS: blockUIOverlayCSS,
 			} );
 
-			params.min_date = dateRange.startDate;
-			params.max_date = dateRange.endDate;
+			if ( booking_form_params.timezone_conversion ) {
+				params.timezone_offset = get_client_server_timezone_offset_hrs( dateRange.startDate );
+			}
+
+			params.min_date = moment( dateRange.startDate ).format( 'YYYY-MM-DD' );
+			params.max_date = moment( dateRange.endDate ).format( 'YYYY-MM-DD' );
 
 			$.ajax({
 				context: this,
@@ -756,25 +754,25 @@ jQuery( function( $ ) {
 				data: params,
 			})
 			.done( function( data ) {
-	
+
 				this.bookingsData = this.bookingsDate || {};
 
 				$.each( data, function( key, val ) {
-	
+
 					if ( $.isArray( val ) || typeof val === 'object' ) {
-	
+
 						var emptyType = ( $.isArray( val ) ) ? [] : {};
-	
+
 						this.bookingsData[ key ] = this.bookingsData[ key ] || emptyType;
-	
+
 						$.extend( this.bookingsData[ key ], val );
-						
+
 					} else {
-	
+
 						this.bookingsData[ key ] = val;
-	
+
 					}
-	
+
 				}.bind( this ) );
 
 				this.cache.data[ cacheKey ] = data;
@@ -782,25 +780,25 @@ jQuery( function( $ ) {
 				if ( ! year && ! month && this.bookingsData.min_date ) {
 					dateRange = get_date_range( this.get_default_date( this.bookingsData.min_date ) );
 				}
-	
+
 				deferred.resolveWith( this, [ dateRange, data ] );
 
 				this.$picker.unblock();
-	
+
 			}.bind( this ) );
 
 		}
 
 		return deferred;
-		
+
 	}
-	
+
 	/**
-	 * Gets the default date 
+	 * Gets the default date
 	 *
 	 * @version 1.10.11
 	 * @since   1.10.11
-	 * @returns {Date}  Default date 
+	 * @returns {Date}  Default date
 	 */
 	WC_Bookings_DatePicker.prototype.get_default_date = function get_default_date( minBookableDate ) {
 
@@ -810,14 +808,14 @@ jQuery( function( $ ) {
 		// but we want to go as far as to the end of the current month.
 		defaultDateFromData[2] = '31';
 		var modifier            = 1;
-	
+
 		// If for some reason the default_date didn't get or set incorrectly we should
 		// try to fix it even though it may be indicative somewith else has gone wrong
 		// on the backend.
 		defaultDate = ( defaultDateFromData.length !== 3 ) ? new Date() : new Date( defaultDateFromData );
 
 		// The server will sometimes return a min_bookable_date with the data request
-		// If that happens we need to modify the default date to start from this 
+		// If that happens we need to modify the default date to start from this
 		// modified date.
 		if ( minBookableDate ) {
 
@@ -835,9 +833,9 @@ jQuery( function( $ ) {
 			defaultDate.setDate( defaultDate.getDate() + modifier );
 
 		}
-	
+
 		return defaultDate;
-	
+
 	}
 
 	/**
@@ -846,16 +844,16 @@ jQuery( function( $ ) {
 	 * @version 1.10.11
 	 * @since   1.10.11
 	 * @param   {number} [ month = currentMonth ] - The month in a 1 based index to get the number of days for.
-	 * @returns {number} Number of days in the month.  
+	 * @returns {number} Number of days in the month.
 	 */
 	WC_Bookings_DatePicker.prototype.get_number_of_days_in_month = function get_number_of_days_in_month( month ) {
 
 			var currentDate = this.get_default_date();
-		
+
 			month = month || currentDate.getMonth() + 1;
-		
+
 			return new Date( currentDate.getFullYear(), month, 0 ).getDate();
-		
+
 		}
 
 	/**
@@ -866,7 +864,7 @@ jQuery( function( $ ) {
 	 * @param   {string} key - Custom data attribute to get.
 	 */
 	WC_Bookings_DatePicker.prototype.get_custom_data = function get_custom_data( key ) {
-		
+
 		if ( ! key ) {
 			return;
 		}
@@ -874,7 +872,7 @@ jQuery( function( $ ) {
 		return this.customData[ key ] || null;
 
 	}
-	
+
 	/**
 	 * Get data attribute set on the $picker element.
 	 *
@@ -902,11 +900,11 @@ jQuery( function( $ ) {
 	 * @param   {number} padInDays - Number of days to pad on either side of the range.
 	 */
 	WC_Bookings_DatePicker.prototype.get_padded_date_range = function get_padded_date_range( date, rangeInDays, padInDays ) {
-	
+
 		date					= date || this.get_default_date();
 		rangeInDays				= rangeInDays || 30;
 		padInDays				= padInDays || 7;
-		
+
 		var currentDate 		= new Date();
 		var isCurrentDayToday 	= ( date < currentDate );
 		var startDate			= new Date( date.setDate( ( isCurrentDayToday ) ? currentDate.getDate() : '01' ) ); // We dont go back further than today
@@ -914,12 +912,12 @@ jQuery( function( $ ) {
 
 		startDate.setDate( startDate.getDate() - ( ( isCurrentDayToday ) ? 0 : padInDays ) ); // No reason to pad the left if the date is today
 		endDate.setDate( endDate.getDate() + ( rangeInDays + padInDays ) );
-	
+
 		return {
 			startDate	: startDate,
 			endDate		: endDate
 		}
-	
+
 	}
 
 	/**
@@ -948,7 +946,7 @@ jQuery( function( $ ) {
 
 		// Unavailable days?
 		if ( this.bookingsData.unavailable_days && this.bookingsData.unavailable_days[ ymdIndex ] && this.bookingsData.unavailable_days[ ymdIndex ][ resource_id ] ) {
-			
+
 			attributes.title 		= booking_form_params.i18n_date_unavailable;
 			attributes.selectable 	= false;
 			attributes.class.push( 'not_bookable' );
@@ -957,7 +955,7 @@ jQuery( function( $ ) {
 
 		// Buffer days?
 		if ( this.bookingsData.buffer_days && this.bookingsData.buffer_days[ ymdIndex ] ) {
-			
+
 			attributes.title 		= booking_form_params.i18n_date_unavailable;
 			attributes.selectable 	= false;
 			attributes.class.push( 'not_bookable' );
@@ -966,7 +964,7 @@ jQuery( function( $ ) {
 
 		// Restricted days?
 		if ( this.bookingsData.restricted_days && undefined === this.bookingsData.restricted_days[ day_of_week ] ) {
-			
+
 			attributes.title 		= booking_form_params.i18n_date_unavailable;
 			attributes.selectable 	= false;
 			attributes.class.push( 'not_bookable' );
@@ -974,7 +972,7 @@ jQuery( function( $ ) {
 		}
 
 		if ( '' + year + month + day < wc_bookings_booking_form.current_time ) {
-			
+
 			attributes.title 		= booking_form_params.i18n_date_unavailable;
 			attributes.selectable 	= false;
 			attributes.class.push( 'not_bookable' );
@@ -984,17 +982,17 @@ jQuery( function( $ ) {
 		// Fully booked?
 		if ( this.bookingsData.fully_booked_days[ ymdIndex ] ) {
 			if ( this.bookingsData.fully_booked_days[ ymdIndex ][0] || this.bookingsData.fully_booked_days[ ymdIndex ][ resource_id ] ) {
-				
+
 				attributes.title 		= booking_form_params.i18n_date_fully_booked;
 				attributes.selectable 	= false;
 				attributes.class        = [ 'fully_booked' ];
 
 				return attributes;
-			
+
 			} else if ( 'automatic' === this.customData.resources_assignment ) {
 
 				attributes.class        = [ 'partial_booked' ];
-			
+
 			}
 		}
 
@@ -1031,33 +1029,34 @@ jQuery( function( $ ) {
 			} else {
 				attributes.title = booking_form_params.i18n_date_available;
 			}
+			var fieldset   = this.$picker.closest( 'fieldset' );
+			var start_date = $.datepicker.parseDate( $.datepicker.ISO_8601, wc_bookings_date_picker.get_input_date( fieldset, '' ) );
+			var end_date;
 
 			if ( this.$picker.data( 'is_range_picker_enabled' ) ) {
-				var fieldset   = this.$picker.closest( 'fieldset' );
-				var start_date = $.datepicker.parseDate( $.datepicker.ISO_8601, wc_bookings_date_picker.get_input_date( fieldset, '' ) );
-				var end_date   = $.datepicker.parseDate( $.datepicker.ISO_8601, wc_bookings_date_picker.get_input_date( fieldset, 'to_' ) );
+				end_date = $.datepicker.parseDate( $.datepicker.ISO_8601, wc_bookings_date_picker.get_input_date( fieldset, 'to_' ) );
+			} else if ( start_date && number_of_days > 1 ) {
+				// We only want to do this for days, and number_of_days will
+				// be 1 if the duration day is something different
+				end_date = new Date( start_date );
+				end_date.setDate( end_date.getDate() + ( number_of_days - 1 ) );
+			}
 
-				// Add bookable-range CSS to all days in the range
-				if ( start_date && ( ( date.getTime() === start_date.getTime() ) || ( end_date && date >= start_date && date <= end_date ) ) ) {
-					
-					attributes.class.push( 'bookable-range' );
+			// Add bookable-range CSS to all days in the range
+			if ( start_date && ( ( date.getTime() === start_date.getTime() ) || ( end_date && date >= start_date && date <= end_date ) ) ) {
 
-					// Add either selection-start-date or selection-end-date CSS to the first/last day only
-					if ( date.getTime() === start_date.getTime() ) {
+				attributes.class.push( 'bookable-range' );
 
-						attributes.class.push( 'selection-start-date' );
+				// Add either selection-start-date or selection-end-date CSS to the first/last day only
+				if ( date.getTime() === start_date.getTime() ) {
 
-					} else if ( date.getTime() === end_date.getTime() ) {
+					attributes.class.push( 'selection-start-date' );
 
-						attributes.class.push( 'selection-end-date' );
+				} else if ( date.getTime() === end_date.getTime() ) {
 
-					}
-				} else {
-
-					attributes.class.push( 'bookable' );
+					attributes.class.push( 'selection-end-date' );
 
 				}
-
 			} else {
 
 				attributes.class.push( 'bookable' );
@@ -1069,6 +1068,8 @@ jQuery( function( $ ) {
 		return attributes;
 
 	}
+
+	moment.locale( wc_bookings_locale );
 
 	// export globally
 	wc_bookings_date_picker = wc_bookings_date_picker_object;

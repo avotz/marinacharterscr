@@ -53,16 +53,22 @@ class WC_Product_Booking_Person_Type_Data_Store_CPT extends WC_Data_Store_WP {
 		}
 
 		$person_type->set_defaults();
+		$cost       = get_post_meta( $person_type->get_id(), 'cost', true );
+		$cost       = empty( $cost ) ? 0 : $cost;
+		$block_cost = get_post_meta( $person_type->get_id(), 'block_cost', true );
+		$block_cost = empty( $block_cost ) ? 0 : $block_cost;
+
 		$person_type->set_props( array(
 			'name'        => $person_type_post->post_title,
 			'description' => $person_type_post->post_excerpt,
 			'sort_order'  => $person_type_post->menu_order,
 			'parent_id'   => $person_type_post->post_parent,
-			'cost'        => get_post_meta( $person_type->get_id(), 'cost', true ),
-			'block_cost'  => get_post_meta( $person_type->get_id(), 'block_cost', true ),
+			'cost'        => $cost,
+			'block_cost'  => $block_cost,
 			'min'         => get_post_meta( $person_type->get_id(), 'min', true ),
 			'max'         => get_post_meta( $person_type->get_id(), 'max', true ),
 		) );
+
 		$person_type->set_object_read( true );
 	}
 

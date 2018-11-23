@@ -1,5 +1,37 @@
 *** WooCommerce Bookings Changelog ***
 
+2018-11-12 - version 1.12.2
+* Tweak  - Add link to WordPress timezone settings.
+* Tweak  - Performance improvement for Bookable products that contain many bookable blocks.
+* Fix    - Datepicker in Edit Booking fixed to honor WordPress week start day.
+* Fix    - My Account page shows bookings in the site's time zone, instead of the local time zone.
+* Fix    - JS error in console when trying to save a product that's not a booking. Prevents saving.
+* Tweak  - Prevent loading of availability on initial page load.
+* Tweak  - PAO 3.0+ compatibilty.
+* Fix    - Break after first application of custom rule on a booking block.
+* Fix    - Rounding issue when manually creating a booking and generating an order.
+
+2018-10-24 - version 1.12.1
+* Fix    - Fix DST browser compatibility.
+
+2018-10-16 - version 1.12.0
+* Add    - Timezone conversion option.
+* Add    - Button to clear expired In Cart bookings.
+* Fix    - Fix ampersands for Google calendar integration.
+* Fix    - Default to first available booking date snippet.
+* Update - Switch to sass for css preprocessor.
+* Update - PAO 3.0 compatibility.
+* Update - WC 3.5 compatibility.
+
+2018-08-14 - version 1.11.3
+* Fix    - Display issue on compatibility with Product Add-Ons on product page.
+* Fix    - Clarification for calendar days restriction.
+* Fix    - JavaScript error for DatePicker in International Browsers.
+* Fix    - Calendar (Day) View - datepicker doesn't respect WordPress localization.
+* New    - Add hook to allow bypassing block availability checker
+* Fix    - DatePicker not initially loading the correct month when not current month.
+* Fix    - End date doesn't respect the `woocommerce_bookings_mdy_format` filter.
+
 2018-05-23 - version 1.11.2
 * Update - Privacy policy notification.
 * Update - Export/erasure hooks added.

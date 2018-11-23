@@ -1,4 +1,10 @@
 jQuery(document).ready(function($) {
+	var local_timezone = moment.tz.guess() || booking_form_params.server_timezone;
+
+	if ( booking_form_params.timezone_conversion ) {
+		$( '.wc-bookings-date-picker-timezone' ).text( local_timezone.replace( '_', ' ' ) );
+		$( '[name="wc_bookings_field_start_date_local_timezone"]' ).val( local_timezone );
+	}
 
 	$('.block-picker').on( 'click', 'a', function() {
 		var value        = $(this).data( 'value' );
@@ -45,9 +51,15 @@ jQuery(document).ready(function($) {
 		var block_picker        = $(element).closest( 'div' ).find( '.block-picker' );
 		var selected_block      = block_picker.find( '.selected' );
 
-		var year  = parseInt( fieldset.find( 'input.booking_date_year' ).val(), 10 );
-		var month = parseInt( fieldset.find( 'input.booking_date_month' ).val(), 10 );
-		var day   = parseInt( fieldset.find( 'input.booking_date_day' ).val(), 10 );
+		var year_str = fieldset.find( 'input.booking_date_year' ).val();
+		var year  = parseInt( year_str, 10 );
+		var month_str = fieldset.find( 'input.booking_date_month' ).val();
+
+		var month  = parseInt( month_str, 10 );
+		var day_str = fieldset.find( 'input.booking_date_day' ).val();
+		var day  = parseInt( day_str, 10 );
+
+		var date_str =  year_str + '-' + month_str + '-' + day_str;
 
 		if ( ! year || ! month || ! day ) {
 			return;
@@ -60,16 +72,30 @@ jQuery(document).ready(function($) {
 		// Get blocks via ajax
 		if ( xhr ) xhr.abort();
 
+		var form_val = $form.serialize();
+
+		/*
+		 * Get previous/next day in addition to current day based on server/client timezone offset.
+		 * This will give the client enough blocks to fill out 24 hours of blocks in its timezone.
+		 */
+		var server_offset  = get_client_server_timezone_offset_hrs( date_str );
+		if ( server_offset < 0 ) {
+			form_val += '&get_next_day=true';
+		} else if ( server_offset > 0 ) {
+			form_val += '&get_prev_day=true';
+		}
+
 		xhr = $.ajax({
 			type: 		'POST',
 			url: 		booking_form_params.ajax_url,
 			data: 		{
 				action: 'wc_bookings_get_blocks',
-				form:   $form.serialize()
+				form:   form_val
 			},
 			success: function( code ) {
 				block_picker.html( code );
 				resize_blocks();
+				offset_block_times( date_str );
 				block_picker.closest( 'div' ).unblock();
 				set_selected_time( block_picker, selected_block.data( 'value' ) );
 			},
@@ -94,5 +120,35 @@ jQuery(document).ready(function($) {
 
 		$('.block-picker a').width( max_width );
 		$('.block-picker a').height( max_height );
+	}
+
+	function offset_block_times( date_str ) {
+		if ( ! booking_form_params.timezone_conversion ) {
+			return;
+		}
+
+		var from = moment.tz( date_str, local_timezone );
+		var to = moment( from );
+		to.add( 1, 'days' );
+
+		$( '.block-picker .block a' ).each( function() {
+			var block_time  = $( this ).attr( 'data-value' ); // iso8061 format time string
+			var server_offset = get_client_server_timezone_offset_hrs( date_str );
+			var server_local_time = moment.tz( block_time, booking_form_params.server_timezone );
+			var client_local_time = moment.tz( block_time, booking_form_params.server_timezone );
+			client_local_time.add( server_offset, 'hours' );
+
+			if ( server_local_time.isBefore( from ) || to.isBefore( server_local_time ) ) {
+				// Delete any blocks outside of today
+				$( this ).parent().remove();
+			} else {
+				var local_time_str = client_local_time.format( booking_form_params.server_time_format );
+				$( this ).attr( 'title', 'Store server time: ' + server_local_time.format( 'YYYY-MM-DD h:mm A' ) );
+				$( this ).text( client_local_time.format( booking_form_params.server_time_format ) );
+			}
+		});
+
+		var server_offset  = get_client_server_timezone_offset_hrs( date_str );
+
 	}
 });

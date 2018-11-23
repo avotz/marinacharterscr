@@ -39,9 +39,14 @@ if ( $booking->has_resources() && $resource ) {
 }
 
 /* translators: 1: booking start date */
-echo sprintf( __( 'Booking Start Date: %s', 'woocommerce-bookings' ), $booking->get_start_date() ) . "\n";
+echo sprintf( __( 'Booking Start Date: %s', 'woocommerce-bookings' ), $booking->get_start_date( null, null, wc_should_convert_timezone( $booking ) ) ) . "\n";
 /* translators: 1: booking end date */
-echo sprintf( __( 'Booking End Date: %s', 'woocommerce-bookings' ), $booking->get_end_date() ) . "\n";
+echo sprintf( __( 'Booking End Date: %s', 'woocommerce-bookings' ), $booking->get_end_date( null, null, wc_should_convert_timezone( $booking ) ) ) . "\n";
+
+if ( wc_should_convert_timezone( $booking ) ) {
+	/* translators: 1: time zone */
+	echo sprintf( __( 'Time Zone: %s', 'woocommerce-bookings' ), str_replace( '_', ' ', $booking->get_local_timezone() ) );
+}
 
 if ( $booking->has_persons() ) {
 	foreach ( $booking->get_persons() as $id => $qty ) {

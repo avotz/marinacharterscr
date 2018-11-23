@@ -27,6 +27,7 @@ class WC_Booking_Data_Store extends WC_Data_Store_WP {
 		'_booking_start'                  => 'start',
 		'_booking_end'                    => 'end',
 		'_wc_bookings_gcalendar_event_id' => 'google_calendar_event_id',
+		'_local_timezone'                 => 'local_timezone',
 	);
 
 	/*

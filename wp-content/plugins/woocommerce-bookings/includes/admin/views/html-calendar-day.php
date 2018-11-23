@@ -43,6 +43,7 @@
 				<a class="month" href="<?php echo esc_url( add_query_arg( 'view', 'month' ) ); ?>"><?php _e( 'Month View', 'woocommerce-bookings' ); ?></a>
 			</div>
 			<script type="text/javascript">
+				<?php global $wp_locale; ?>
 				jQuery(function() {
 					jQuery(".tablenav select, .tablenav input").change(function() {
 						jQuery("#mainform").submit();
@@ -50,6 +51,11 @@
 					jQuery( '.calendar_day' ).datepicker({
 						dateFormat: 'yy-mm-dd',
 						firstDay: <?php echo get_option( 'start_of_week' ); ?>,
+						monthNames: <?php echo json_encode( array_values( $wp_locale->month ) ); ?>,
+						monthNamesShort: <?php echo json_encode( array_values( $wp_locale->month_abbrev ) ); ?>,
+						dayNames: <?php echo json_encode( array_values( $wp_locale->weekday ) ); ?>,
+						dayNamesShort: <?php echo json_encode( array_values( $wp_locale->weekday_abbrev ) ); ?>,
+						dayNamesMin: <?php echo json_encode( array_values( $wp_locale->weekday_initial ) ); ?>,
 						numberOfMonths: 1,
 					});
 					// Tooltips

@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php
 		$min_date      = $bookable_product->get_min_date_value( 'edit' );
 		$min_date_unit = $bookable_product->get_min_date_unit( 'edit' );
-		$max_date      = $bookable_product->get_max_date_value( 'edit' );
+		$max_date      = 0 === $bookable_product->get_max_date_value( 'edit' ) ? 1 : $bookable_product->get_max_date_value( 'edit' );
 		$max_date_unit = $bookable_product->get_max_date_unit( 'edit' );
 
 		woocommerce_wp_text_input( array(
@@ -100,7 +100,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			array(
 				'id'          => '_wc_booking_has_restricted_days',
 				'value'       => $bookable_product->has_restricted_days( 'edit' ) ? 'yes' : 'no',
-				'label'       => __( 'Restrict start days?', 'woocommerce-bookings' ),
+				'label'       => __( 'Restrict start and end days?', 'woocommerce-bookings' ),
 				'description' => __( 'Restrict bookings so that they can only start on certain days of the week. Does not affect availability.', 'woocommerce-bookings' ),
 			)
 		);

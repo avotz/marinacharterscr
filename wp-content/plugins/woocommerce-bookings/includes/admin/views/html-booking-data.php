@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="options_group show_if_booking">
 	<?php
 		$duration_type = $bookable_product->get_duration_type( 'edit' );
-		$duration      = $bookable_product->get_duration( 'edit' );
+		$duration      = 0 === $bookable_product->get_duration( 'edit' ) ? 1 : $bookable_product->get_duration( 'edit' );
 		$duration_unit = $bookable_product->get_duration_unit( 'edit' );
 	?>
 	<p class="form-field">
@@ -44,7 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			'id'                => '_wc_booking_max_duration',
 			'label'             => __( 'Maximum duration', 'woocommerce-bookings' ),
 			'description'       => __( 'The maximum allowed duration the user can input.', 'woocommerce-bookings' ),
-			'value'             => $bookable_product->get_max_duration( 'edit' ),
+			'value'             => 0 === $bookable_product->get_max_duration( 'edit' ) ? 1 : $bookable_product->get_max_duration( 'edit' ),
 			'desc_tip'          => true,
 			'type'              => 'number',
 			'custom_attributes' => array(

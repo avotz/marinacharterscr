@@ -196,7 +196,7 @@ class WC_Bookings_Details_Meta_Box {
 							$guest_placeholder = __( 'Guest', 'woocommerce-bookings' );
 							if ( 'Guest' === $name ) {
 								/* translators: 1: guest name */
-								$guest_placeholder = sprintf( _x( 'Guest (%s)', 'woocommerce-bookings', 'Admin booking guest placeholder' ), $name );
+								$guest_placeholder = sprintf( _x( 'Guest (%s)', 'Admin booking guest placeholder', 'woocommerce-bookings' ), $name );
 							}
 
 							if ( $booking->get_customer_id() ) {
@@ -355,6 +355,26 @@ class WC_Bookings_Details_Meta_Box {
 								'value'       => date( 'H:i', $booking->get_end( 'edit' ) ),
 								'type'        => 'time',
 							) );
+
+						if ( wc_should_convert_timezone( $booking ) ) {
+							woocommerce_wp_text_input( array(
+								'id'                => 'booking_start_time',
+								'label'             => __( 'Start time (local timezone):', 'woocommerce-bookings' ),
+								'placeholder'       => 'hh:mm',
+								'value'             => date( 'H:i', $booking->get_start( 'edit', true ) ),
+								'type'              => 'time',
+								'custom_attributes' => array( 'disabled' => 'disabled' ),
+							) );
+
+							woocommerce_wp_text_input( array(
+								'id'                => 'booking_end_time',
+								'label'             => __( 'End time (local timezone):', 'woocommerce-bookings' ),
+								'placeholder'       => 'hh:mm',
+								'value'             => date( 'H:i', $booking->get_end( 'edit', true ) ),
+								'type'              => 'time',
+								'custom_attributes' => array( 'disabled' => 'disabled' ),
+							) );
+						}
 						?>
 					</div>
 				</div>
@@ -374,6 +394,7 @@ class WC_Bookings_Details_Meta_Box {
 
 			$( '.date-picker-field' ).datepicker({
 				dateFormat: 'yy-mm-dd',
+				firstDay: ". get_option( 'start_of_week' ) .",
 				numberOfMonths: 1,
 				showButtonPanel: true,
 			});

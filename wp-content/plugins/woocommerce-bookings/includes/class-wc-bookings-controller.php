@@ -194,15 +194,19 @@ class WC_Bookings_Controller {
 	 * @param  WC_Product_Booking|int $bookable_product
 	 * @param  int                $min_date
 	 * @param  int                $max_date
+	 * @param  string             $default_date_format
+	 * @param  int                $timezone_offset Timezone offset in hours
 	 *
 	 * @return array( 'partially_booked_days', 'fully_booked_days' )
 	 */
-	public static function find_booked_day_blocks( $bookable_product, $min_date = 0, $max_date = 0, $default_date_format = 'Y-n-j' ) {
+	public static function find_booked_day_blocks( $bookable_product, $min_date = 0, $max_date = 0, $default_date_format = 'Y-n-j', $timezone_offset = 0 ) {
 		$booked_day_blocks = array(
 			'partially_booked_days' => array(),
 			'fully_booked_days'     => array(),
 			'unavailable_days'      => array(),
 		);
+
+		$timezone_offset = $timezone_offset * HOUR_IN_SECONDS;
 
 		if ( is_int( $bookable_product ) ) {
 			$bookable_product = wc_get_product( $bookable_product );
@@ -229,8 +233,8 @@ class WC_Bookings_Controller {
 			if ( ! is_a( $existing_booking, 'WC_Booking' ) ) {
 				continue;
 			}
-			$check_date    = strtotime( 'midnight', $existing_booking->get_start() );
-			$check_date_to = strtotime( 'midnight', $existing_booking->get_end() );
+			$check_date    = strtotime( 'midnight', $existing_booking->get_start() + $timezone_offset );
+			$check_date_to = strtotime( 'midnight', $existing_booking->get_end() + $timezone_offset );
 			$resource_id   = $existing_booking->get_resource_id();
 
 			// If it's a booking on the same day, move it before the end of the current day
@@ -320,29 +324,6 @@ class WC_Bookings_Controller {
 	}
 
 	/**
-	 * Loop through given bookings to find those that are on or over lap the given date.
-	 *
-	 * @since 1.9.14
-	 * @param  array $bookings
-	 * @param  string $date
-	 *
-	 * @return array of booking ids
-	 */
-	public static function filter_bookings_on_date( $bookings, $date ) {
-		$bookings_on_date = array();
-		$date_start       = strtotime( 'midnight', $date ); // Midnight today.
-		$date_end         = strtotime( 'tomorrow', $date ); // Midnight next day.
-
-		foreach ( $bookings as $booking ) {
-			// does the date we want to check fall on one of the days in the booking?
-			if ( $booking->get_start() < $date_end && $booking->get_end() > $date_start ) {
-				$bookings_on_date[] = $booking;
-			}
-		}
-		return $bookings_on_date;
-	}
-
-	/**
 	 * Gets bookings for product ids and resource ids
 	 * @param  array  $ids
 	 * @param  array  $status
@@ -393,22 +374,6 @@ class WC_Bookings_Controller {
 			),
 		) );
 		return $booking_ids;
-	}
-
-	/**
-	 * Gets bookings for a resource.
-	 *
-	 * @param  int $resource_id ID
-	 * @param  array  $status
-	 * @return array of WC_Booking objects
-	 */
-	public static function get_bookings_for_resource( $resource_id, $status = array( 'confirmed', 'paid' ) ) {
-		$booking_ids = WC_Booking_Data_Store::get_booking_ids_by( array(
-			'object_id'   => $resource_id,
-			'object_type' => 'resource',
-			'status'      => $status,
-		) );
-		return array_map( 'get_wc_booking', $booking_ids );
 	}
 
 	/**
@@ -514,6 +479,8 @@ class WC_Bookings_Controller {
 	 * @return array
 	 */
 	public static function get_bookings_star_and_end_times( $bookings_objects, $resource_id = 0 ) {
+		_deprecated_function( __METHOD__, '1.12.2' );
+
 		$bookings_start_and_end = array();
 		foreach ( $bookings_objects as $booking ) {
 			if ( ! empty( $resource_id ) && $booking->get_resource_id() !== $resource_id ) {
@@ -525,4 +492,46 @@ class WC_Bookings_Controller {
 		return $bookings_start_and_end;
 	}
 
+	/**
+	 * Gets bookings for a resource.
+	 *
+	 * @param  int $resource_id ID
+	 * @param  array  $status
+	 * @return array of WC_Booking objects
+	 */
+	public static function get_bookings_for_resource( $resource_id, $status = array( 'confirmed', 'paid' ) ) {
+		_deprecated_function( __METHOD__, '1.12.2' );
+
+		$booking_ids = WC_Booking_Data_Store::get_booking_ids_by( array(
+			'object_id'   => $resource_id,
+			'object_type' => 'resource',
+			'status'      => $status,
+		) );
+		return array_map( 'get_wc_booking', $booking_ids );
+	}
+
+	/**
+	 * Loop through given bookings to find those that are on or over lap the given date.
+	 *
+	 * @since 1.9.14
+	 * @param  array $bookings
+	 * @param  string $date
+	 *
+	 * @return array of booking ids
+	 */
+	public static function filter_bookings_on_date( $bookings, $date ) {
+		_deprecated_function( __METHOD__, '1.12.2' );
+
+		$bookings_on_date = array();
+		$date_start       = strtotime( 'midnight', $date ); // Midnight today.
+		$date_end         = strtotime( 'tomorrow', $date ); // Midnight next day.
+
+		foreach ( $bookings as $booking ) {
+			// does the date we want to check fall on one of the days in the booking?
+			if ( $booking->get_start() < $date_end && $booking->get_end() > $date_start ) {
+				$bookings_on_date[] = $booking;
+			}
+		}
+		return $bookings_on_date;
+	}
 }

@@ -56,4 +56,42 @@ class WC_Bookings_Tools {
 			);
 		}
 	}
+
+	/**
+	 * Removes In Cart bookings
+	 *
+	 * @param  string  $remove  If set to 'all' it will remove all In Cart, otherwise, just expired ones. 
+	 *
+	 * @return string  Message being returned after the system tool is run.
+	 */
+	public static function remove_in_cart_bookings( $remove = 'expired' ) {
+		
+		$minutes = apply_filters( 'woocommerce_bookings_remove_inactive_cart_time', 60 );
+		$minutes = empty( $minutes ) ? 60 : $minutes;
+
+		$args = array(
+			'post_type'   => 'wc_booking',
+			'post_status' => 'in-cart',
+			'date_query'  => array(
+				array(
+					'column' => 'post_date_gmt',
+					'before' => date( 'Y-m-d H:i:s', time() - ( $minutes * 60 ) ),
+				),
+			),
+			'posts_per_page' => -1,
+		);
+
+		// We set this, then remove it if there's a match because we don't always want to remove all. 
+		if ( 'all' === $remove ) {
+			unset( $args['date_query'] );
+		}
+
+		$results = new WP_Query( $args );
+
+		foreach ( $results->posts as $post ) {
+			wp_delete_post( $post->ID );
+		}
+
+		return sprintf( __( 'Removed %s expired In Cart booking(s).', 'woocommerce-bookings' ) , $results->found_posts );
+	}
 }

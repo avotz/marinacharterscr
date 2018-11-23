@@ -30,7 +30,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 	<ul class="wc-booking-summary-list">
-		<li><?php echo esc_html( apply_filters( 'wc_bookings_summary_list_date', $booking_date, $booking->get_start(), $booking->get_end() ) ); ?></li>
+		<li>
+			<?php echo esc_html( apply_filters( 'wc_bookings_summary_list_date', $booking_date, $booking->get_start(), $booking->get_end() ) ); ?>
+			<?php if ( wc_should_convert_timezone( $booking ) ):
+				echo esc_html( sprintf( __( 'in timezone: %s', 'woocommerce-bookings' ), $booking_timezone ) );
+			endif; ?>
+        </li>
 
 		<?php if ( $resource ) : ?>
 			<li>

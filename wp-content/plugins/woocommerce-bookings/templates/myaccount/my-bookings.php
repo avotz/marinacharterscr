@@ -54,8 +54,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</a>
 					<?php endif; ?>
 				</td>
-				<td class="booking-start-date"><?php echo esc_html( $booking->get_start_date() ); ?></td>
-				<td class="booking-end-date"><?php echo esc_html( $booking->get_end_date() ); ?></td>
+				<td class="booking-start-date"><?php echo esc_html( $booking->get_start_date( null, null, wc_should_convert_timezone( $booking ) ) ); ?></td>
+				<td class="booking-end-date"><?php echo esc_html( $booking->get_end_date( null, null, wc_should_convert_timezone( $booking ) ) ); ?></td>
 				<td class="booking-status"><?php echo esc_html( wc_bookings_get_status_label( $booking->get_status() ) ); ?></td>
 				<td class="booking-cancel">
 					<?php if ( $booking->get_status() != 'cancelled' && $booking->get_status() != 'completed' && ! $booking->passed_cancel_day() ) : ?>

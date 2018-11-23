@@ -127,6 +127,7 @@ function get_wc_booking_data_label( $key, $product ) {
 		'type'     => ( $product->get_resource_label() ? $product->get_resource_label() : __( 'Booking Type', 'woocommerce-bookings' ) ),
 		'date'     => __( 'Booking Date', 'woocommerce-bookings' ),
 		'time'     => __( 'Booking Time', 'woocommerce-bookings' ),
+		'timezone' => __( 'Time Zone', 'woocommerce-bookings' ),
 		'duration' => __( 'Duration', 'woocommerce-bookings' ),
 		'persons'  => __( 'Person(s)', 'woocommerce-bookings' ),
 	) );
@@ -706,15 +707,23 @@ function wc_bookings_get_time_slots_html( $bookable_product, $blocks, $intervals
 		if ( $quantity['available'] > 0 ) {
 			if ( $quantity['booked'] ) {
 				/* translators: 1: quantity available */
-				$block_html .= '<li class="block" data-block="' . esc_attr( date( 'Hi', $block ) ) . '"><a href="#" data-value="' . date( 'G:i', $block ) . '">' . date_i18n( get_option( 'time_format' ), $block ) . ' <small class="booking-spaces-left">(' . sprintf( _n( '%d left', '%d left', $quantity['available'], 'woocommerce-bookings' ), absint( $quantity['available'] ) ) . ')</small></a></li>';
+				$block_html .= '<li class="block" data-block="' . esc_attr( date( 'Hi', $block ) ) . '"><a href="#" data-value="' . get_time_as_iso8601( $block ) . '">' . date_i18n( get_option( 'time_format' ), $block ) . ' <small class="booking-spaces-left">(' . sprintf( _n( '%d left', '%d left', $quantity['available'], 'woocommerce-bookings' ), absint( $quantity['available'] ) ) . ')</small></a></li>';
 			} else {
-				$block_html .= '<li class="block" data-block="' . esc_attr( date( 'Hi', $block ) ) . '"><a href="#" data-value="' . date( 'G:i', $block ) . '">' . date_i18n( get_option( 'time_format' ), $block ) . '</a></li>';
+				$block_html .= '<li class="block" data-block="' . esc_attr( date( 'Hi', $block ) ) . '"><a href="#" data-value="' . get_time_as_iso8601( $block ) . '">' . date_i18n( get_option( 'time_format' ), $block ) . '</a></li>';
 			}
 		}
 	}
 
 	return apply_filters( 'wc_bookings_get_time_slots_html', $block_html, $available_blocks, $blocks );
 }
+
+function get_time_as_iso8601( $timestamp ) {
+	$timezone = wc_booking_get_timezone_string();
+	$server_time = new DateTime( date( 'Y-m-d\TH:i:s', $timestamp ), new DateTimeZone( $timezone ) );
+
+	return $server_time->format( DateTime::ISO8601 );
+}
+
 /**
  * Find available blocks and return HTML for the user to choose a block. Used in class-wc-bookings-ajax.php.
  *
@@ -744,19 +753,21 @@ function wc_bookings_get_summary_list( $booking, $is_admin = false ) {
 	$resource = $booking->get_resource();
 	$label    = $product && is_callable( array( $product, 'get_resource_label' ) ) && $product->get_resource_label() ? $product->get_resource_label() : __( 'Type', 'woocommerce-bookings' );
 
+	$get_local_time = wc_should_convert_timezone( $booking );
 	if ( strtotime( 'midnight', $booking->get_start() ) === strtotime( 'midnight', $booking->get_end() ) ) {
-		$booking_date = sprintf( '%1$s', $booking->get_start_date() );
+		$booking_date = sprintf( '%1$s', $booking->get_start_date( null, null, $get_local_time ) );
 	} else {
-		$booking_date = sprintf( '%1$s / %2$s', $booking->get_start_date(), $booking->get_end_date() );
+		$booking_date = sprintf( '%1$s / %2$s', $booking->get_start_date( null, null, $get_local_time ), $booking->get_end_date( null, null, $get_local_time ) );
 	}
 
 	$template_args = array(
-		'booking'      => $booking,
-		'product'      => $product,
-		'resource'     => $resource,
-		'label'        => $label,
-		'booking_date' => $booking_date,
-		'is_admin'     => $is_admin,
+		'booking'            => $booking,
+		'product'            => $product,
+		'resource'           => $resource,
+		'label'              => $label,
+		'booking_date'       => $booking_date,
+		'booking_timezone'   => str_replace( '_', ' ', $booking->get_local_timezone() ),
+		'is_admin'           => $is_admin,
 	);
 
 	wc_get_template( 'order/booking-summary-list.php', $template_args, 'woocommerce-bookings', WC_BOOKINGS_TEMPLATE_PATH );
@@ -812,4 +823,24 @@ function wc_booking_timezone_offset() {
 	} else {
 		return floatval( get_option( 'gmt_offset', 0 ) ) * HOUR_IN_SECONDS;
 	}
+}
+
+/**
+ * Determine whether Booking time should be converted to local time.
+ *
+ * @since  1.11.4
+ * @return bool
+ */
+function wc_should_convert_timezone( $booking = null ) {
+	if ( 'no' === get_option( 'woocommerce_bookings_timezone_conversion', 'no' ) ) {
+		return false;
+	}
+
+	// If we don't have a booking, just use the setting and return true
+	if ( is_null( $booking ) ) {
+		return true;
+	}
+
+	// If a Booking exists, make sure the local timezone is populated (does not happen for day duration e.g.)
+	return ! empty( $booking->get_local_timezone() );
 }

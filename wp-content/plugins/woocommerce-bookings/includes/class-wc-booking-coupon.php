@@ -84,7 +84,7 @@ class WC_Booking_Coupon {
 		$product_id = is_callable( array( $cart_item['data'], 'get_id' ) ) ? $cart_item['data']->get_id() : $cart_item['data']->id;
 		$product    = wc_get_product( $product_id );
 
-		if ( ! $product->is_type( 'booking' ) ) {
+		if ( ! $product || ! $product->is_type( 'booking' ) ) {
 			return $original_price;
 		}
 

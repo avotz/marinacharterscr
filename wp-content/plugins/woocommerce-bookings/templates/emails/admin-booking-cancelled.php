@@ -41,7 +41,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 		$resource = $booking->get_resource();
 
 		if ( $booking->has_resources() && $resource ) :
-		?>
+			?>
 			<tr>
 				<th style="text-align:left; border: 1px solid #eee;" scope="row"><?php _e( 'Booking Type', 'woocommerce-bookings' ); ?></th>
 				<td style="text-align:left; border: 1px solid #eee;"><?php echo $resource->post_title; ?></td>
@@ -49,12 +49,18 @@ do_action( 'woocommerce_email_header', $email_heading );
 		<?php endif; ?>
 		<tr>
 			<th style="text-align:left; border: 1px solid #eee;" scope="row"><?php _e( 'Booking Start Date', 'woocommerce-bookings' ); ?></th>
-			<td style="text-align:left; border: 1px solid #eee;"><?php echo $booking->get_start_date(); ?></td>
+			<td style="text-align:left; border: 1px solid #eee;"><?php echo $booking->get_start_date( null, null, wc_should_convert_timezone( $booking ) ); ?></td>
 		</tr>
 		<tr>
 			<th style="text-align:left; border: 1px solid #eee;" scope="row"><?php _e( 'Booking End Date', 'woocommerce-bookings' ); ?></th>
-			<td style="text-align:left; border: 1px solid #eee;"><?php echo $booking->get_end_date(); ?></td>
+			<td style="text-align:left; border: 1px solid #eee;"><?php echo $booking->get_end_date( null, null, wc_should_convert_timezone( $booking ) ); ?></td>
 		</tr>
+		<?php if ( wc_should_convert_timezone( $booking ) ) : ?>
+		<tr>
+			<th style="text-align:left; border: 1px solid #eee;" scope="row"><?php esc_html_e( 'Time Zone', 'woocommerce-bookings' ); ?></th>
+			<td style="text-align:left; border: 1px solid #eee;"><?php echo esc_html( str_replace( '_', ' ', $booking->get_local_timezone() ) ); ?></td>
+		</tr>
+		<?php endif; ?>
 		<?php if ( $booking->has_persons() ) : ?>
 			<?php
 			foreach ( $booking->get_persons() as $id => $qty ) :
@@ -63,7 +69,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 				}
 
 				$person_type = ( 0 < $id ) ? get_the_title( $id ) : __( 'Person(s)', 'woocommerce-bookings' );
-			?>
+				?>
 				<tr>
 					<th style="text-align:left; border: 1px solid #eee;" scope="row"><?php echo $person_type; ?></th>
 					<td style="text-align:left; border: 1px solid #eee;"><?php echo $qty; ?></td>

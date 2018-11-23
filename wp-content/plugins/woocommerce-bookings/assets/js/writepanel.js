@@ -55,7 +55,7 @@ jQuery(document).ready(function($) {
 		});
 	});
 
-	$('body').on( 'woocommerce-product-type-change', function( type ) {
+	$('body').on( 'woocommerce-product-type-change', function( event, type ) {
 		if ( type !== 'booking' ) {
 			$('#_wc_booking_has_persons').removeAttr( 'checked' );
 			$('#_wc_booking_has_resources').removeAttr( 'checked' );

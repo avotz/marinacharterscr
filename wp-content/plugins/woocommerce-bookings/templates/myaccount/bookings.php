@@ -61,8 +61,8 @@ if ( ! empty( $tables ) ) : ?>
 							</a>
 							<?php endif; ?>
 						</td>
-						<td class="booking-start-date"><?php echo esc_html( $booking->get_start_date() ); ?></td>
-						<td class="booking-end-date"><?php echo esc_html( $booking->get_end_date() ); ?></td>
+						<td class="booking-start-date"><?php echo esc_html( $booking->get_start_date( null, null, wc_should_convert_timezone( $booking ) ) ); ?></td>
+						<td class="booking-end-date"><?php echo esc_html( $booking->get_start_date( null, null, wc_should_convert_timezone( $booking ) ) ); ?></td>
 						<td class="booking-status"><?php echo esc_html( wc_bookings_get_status_label( $booking->get_status() ) ); ?></td>
 						<td class="booking-cancel">
 							<?php if ( 'cancelled' !== $booking->get_status() && 'completed' !== $booking->get_status() && ! $booking->passed_cancel_day() ) : ?>
@@ -78,11 +78,11 @@ if ( ! empty( $tables ) ) : ?>
 
 		<div class="woocommerce-pagination woocommerce-pagination--without-numbers woocommerce-Pagination">
 			<?php if ( 1 !== $page ) : ?>
-				<a class="woocommerce-button woocommerce-button--previous woocommerce-Button woocommerce-Button--previous button" href="<?php echo esc_url( wc_get_endpoint_url( 'bookings', $page - 1 ) ); ?>"><?php _e( 'Previous', 'woocommerce' ); ?></a>
+				<a class="woocommerce-button woocommerce-button--previous woocommerce-Button woocommerce-Button--previous button" href="<?php echo esc_url( wc_get_endpoint_url( 'bookings', $page - 1 ) ); ?>"><?php _e( 'Previous', 'woocommerce-bookings' ); ?></a>
 			<?php endif; ?>
 
 			<?php if ( $count >= $bookings_per_page ) : ?>
-				<a class="woocommerce-button woocommerce-button--next woocommerce-Button woocommerce-Button--next button" href="<?php echo esc_url( wc_get_endpoint_url( 'bookings', $page + 1 ) ); ?>"><?php _e( 'Next', 'woocommerce' ); ?></a>
+				<a class="woocommerce-button woocommerce-button--next woocommerce-Button woocommerce-Button--next button" href="<?php echo esc_url( wc_get_endpoint_url( 'bookings', $page + 1 ) ); ?>"><?php _e( 'Next', 'woocommerce-bookings' ); ?></a>
 			<?php endif; ?>
 		</div>
 

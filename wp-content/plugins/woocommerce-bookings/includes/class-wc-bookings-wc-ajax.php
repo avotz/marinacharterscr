@@ -38,8 +38,9 @@ class WC_Bookings_WC_Ajax {
 			$args['min_date']              = isset( $_GET['min_date'] ) ? strtotime( $_GET['min_date'] ) : $product->get_min_date();
 			$args['max_date']              = isset( $_GET['max_date'] ) ? strtotime( $_GET['max_date'] ) : $product->get_max_date();
 
-			$min_date = ( ! isset( $_GET['min_date'] ) ) ? strtotime( "+{$args['min_date']['value']} {$args['min_date']['unit']}", current_time( 'timestamp' ) ) : $args['min_date'];
-			$max_date = ( ! isset( $_GET['max_date'] ) ) ? strtotime( "+{$args['max_date']['value']} {$args['max_date']['unit']}", current_time( 'timestamp' ) ) : $args['max_date'];
+			$min_date        = ( ! isset( $_GET['min_date'] ) ) ? strtotime( "+{$args['min_date']['value']} {$args['min_date']['unit']}", current_time( 'timestamp' ) ) : $args['min_date'];
+			$max_date        = ( ! isset( $_GET['max_date'] ) ) ? strtotime( "+{$args['max_date']['value']} {$args['max_date']['unit']}", current_time( 'timestamp' ) ) : $args['max_date'];
+			$timezone_offset = isset( $_GET['timezone_offset'] ) ? $_GET['timezone_offset'] : 0;
 
 			if ( $product->has_resources() ) {
 				foreach ( $product->get_resources() as $resource ) {
@@ -47,7 +48,7 @@ class WC_Bookings_WC_Ajax {
 				}
 			}
 
-			$booked = WC_Bookings_Controller::find_booked_day_blocks( $product_id, $min_date, $max_date );
+			$booked = WC_Bookings_Controller::find_booked_day_blocks( $product_id, $min_date, $max_date, 'Y-n-j', $timezone_offset );
 
 			$args['partially_booked_days'] = $booked['partially_booked_days'];
 			$args['fully_booked_days']     = $booked['fully_booked_days'];
