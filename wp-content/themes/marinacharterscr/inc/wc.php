@@ -37,13 +37,34 @@ remove_action('woocommerce_single_product_summary', 'woocommerce_template_single
 //     return '';
 // }
 
-function occ_redirect_checkout_add_cart($url)
+function marinacharterscr_redirect_checkout_add_cart($url)
 {
     $url = get_permalink(get_option('woocommerce_checkout_page_id'));
     return $url;
 }
 
-add_filter('woocommerce_add_to_cart_redirect', 'occ_redirect_checkout_add_cart');
+add_filter('woocommerce_add_to_cart_redirect', 'marinacharterscr_redirect_checkout_add_cart');
+
+
+add_filter('woocommerce_checkout_fields', 'custom_override_checkout_fields');
+
+// Our hooked in function - $fields is passed via the filter!
+function custom_override_checkout_fields($fields)
+{
+    unset($fields['billing']['billing_address_1']);
+    unset($fields['billing']['billing_address_2']);
+    unset($fields['billing']['billing_country']);
+    unset($fields['billing']['billing_city']);
+    unset($fields['billing']['billing_postcode']);
+    unset($fields['billing']['billing_state']);
+    unset($fields['billing']['billing_company']);
+
+    //$fields['order']['order_comments']['placeholder'] = 'e.g. child seats';
+    $fields['order']['order_comments']['label'] = 'Important Notes';
+
+
+    return $fields;
+}
 
 
 
