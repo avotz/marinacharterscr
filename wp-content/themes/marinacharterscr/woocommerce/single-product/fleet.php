@@ -22,6 +22,10 @@ global $product;
 
                 <div id="bl-main" class="bl-main">
                     <?php  $boats_ids = rwmb_meta( 'rw_boat' );
+                    $height = 'fouritems';
+                    if(count($boats_ids) > 4){
+                      $height = 'sixitems';
+                    }
                     foreach ($boats_ids as $boat_id ) :
 
                         $id = get_post_thumbnail_id($boat_id);
@@ -29,7 +33,7 @@ global $product;
                     
                     ?>
                       
-                        <section id="bl-fleet-section-<?= $boat_id ?>" class="bl-fleet-section" style="background-image: url('<?= $thumb_url[0] ?>')">
+                        <section id="bl-fleet-section-<?= $boat_id ?>" class="bl-fleet-section <?php echo $height ?>" style="background-image: url('<?= $thumb_url[0] ?>');" data-id="<?= $boat_id ?>" >
                             <div class="bl-box">
                               <h2 class="bl-icon bl-icon-works"><?php echo get_the_title($boat_id ) ?></h2>
                             </div>
@@ -52,7 +56,7 @@ global $product;
                                           
                                             ?>
                                             
-                                          <li data-panel="panel-<?= $index ?>"><a href="<?= $image['full_url'] ?>" class="image-link"><img src="<?= $image['url'] ?>" /></a></li>
+                                          <li data-panel="panel-<?= $index ?>"><a href="<?= $image['full_url'] ?>" class="image-link-<?= $boat_id ?>"><img src="<?= $image['url'] ?>" /></a></li>
                                           
                                         <?php 
                                     } ?>
@@ -94,7 +98,7 @@ global $product;
 
                                       ?>
                                         
-                                       <li data-panel="panel-<?= $index ?>"><a href="<?= $image['full_url'] ?>" class="image-link"><img src="<?= $image['url'] ?>" /></a></li>
+                                       <li data-panel="panel-<?= $index ?>"><a href="<?= $image['full_url'] ?>" class="image-link-<?= $boat_id ?>"><img src="<?= $image['url'] ?>" /></a></li>
                                        
                                     <?php 
                                   } ?>

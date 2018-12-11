@@ -18,17 +18,19 @@
 			<p><a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=mb-taxonomy' ) ); ?>" class="button"><?php esc_html_e( 'Start Now', 'mb-custom-post-type' ); ?></a></p>
 			<p>
 				<?php
-				echo wp_kses_post( sprintf(
-					// Translators: %s is the link to the documentation.
-					__( 'Confused when to use custom taxonomy vs. custom fields? <a href="%s" target="_blank">Read here</a>.', 'mb-custom-post-type' ),
-					'https://metabox.io/custom-fields-vs-custom-taxonomies/?utm_source=WordPress&utm_medium=link&utm_campaign=plugin'
-				) );
+				echo wp_kses_post(
+					sprintf(
+						// Translators: %s is the link to the documentation.
+						__( 'Confused when to use custom taxonomy vs. custom fields? <a href="%s" target="_blank">Read here</a>.', 'mb-custom-post-type' ),
+						'https://metabox.io/custom-fields-vs-custom-taxonomies/?utm_source=WordPress&utm_medium=link&utm_campaign=plugin'
+					)
+				);
 				?>
 			</p>
 		</div>
 
 		<div class="col">
-			<iframe width="493" height="277" src="https://www.youtube.com/embed/KG_8MF9xw6E?rel=0" frameborder="0" allowfullscreen></iframe>
+			<iframe width="493" height="277" src="https://www.youtube.com/embed/9c4w5zdeTJI?rel=0" frameborder="0" allowfullscreen></iframe>
 		</div>
 	</div>
 </div>

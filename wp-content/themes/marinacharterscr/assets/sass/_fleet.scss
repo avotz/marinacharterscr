@@ -10,7 +10,13 @@
 	position: absolute;
 	width: 50%;
 	height: 50%;
+	&.sixitems{
+		height: 25%;
+	}
+	
 }
+
+
 
 .bl-main > section:first-child {
 	top: 0;
@@ -28,12 +34,35 @@
 	top: 50%;
 	left: 0;
 	background: $azul2;
+	&.sixitems{
+		top: 25%;
+	}
 }
 
 .bl-main > section:nth-child(4) {
 	top: 50%;
 	left: 50%;
 	background: $azul2;
+	&.sixitems{
+		top: 25%;
+	}
+}
+.bl-main > section:nth-child(5) {
+	top: 50%;
+	left: 0;
+	background: $azul2;
+	&.sixitems{
+		top: 50%;
+	}
+}
+
+.bl-main > section:nth-child(6) {
+	top: 50%;
+	left: 50%;
+	background: $azul2;
+	&.sixitems{
+		top: 50%;
+	}
 }
 
 .bl-box {

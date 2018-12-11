@@ -1,10 +1,10 @@
 === MB Custom Post Type ===
 Contributors: metabox, rilwis, duc88b, fitwp, truongwp
-Donate link: http://www.deluxeblogtips.com/donate
+Donate link: https://metabox.io/pricing/
 Tags: cms, custom, custom post types, custom post type, cpt, post, post types, post type, types
 Requires at least: 4.3
-Tested up to: 4.9.6
-Stable tag: 1.8.0
+Tested up to: 5.0
+Stable tag: 1.8.1
 License: GPLv2 or later
 
 Create and manage custom post types and custom taxonomies with an easy-to-use interface in WordPress.
@@ -21,7 +21,7 @@ Using **MB Custom Post Type**, you will be able to craft the WordPress admin and
 
 **Video demo**:
 
-https://www.youtube.com/watch?v=KG_8MF9xw6E&rel=0
+https://www.youtube.com/watch?v=9c4w5zdeTJI&rel=0
 
 ### Features
 
