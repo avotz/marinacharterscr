@@ -23,7 +23,7 @@ get_header();
              </div>
              <div class="button animated">
              	
-             	<a href="#snorkeling" class="activities-link"><span>View our Activities</span>
+             	<a href="#snorkeling" class="activities-link"><span>View our Adventures</span>
              		<span class="icon">
              			<i class="fas fa-angle-down animated infinite bounce"></i>
              			
@@ -84,7 +84,7 @@ get_header();
 						</div>
 						<div class="button animated">
 							
-							<a href="#fishing" class="activities-link"><span>More Activities</span>
+							<a href="#fishing" class="activities-link"><span>More Adventures</span>
 								<span class="icon">
 									<i class="fas fa-angle-down animated infinite bounce"></i>
 									

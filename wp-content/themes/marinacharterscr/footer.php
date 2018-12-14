@@ -21,7 +21,13 @@
 <?php endif; ?>
 
 
-<?php wp_footer(); ?>
+<?php 
+
+get_template_part('template-parts/activities-by-request');
+
+wp_footer();
+
+?>
 
 </body>
 </html>

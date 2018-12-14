@@ -10527,6 +10527,25 @@ $('.banner-slider').slick({
     pauseOnHover: false
 });
 
+$('.adventure-by-request-link').magnificPopup({
+    type: 'inline',
+    midClick: true,
+    removalDelay: 500, //delay removal by X to allow out-animation
+    callbacks: {
+        beforeOpen: function beforeOpen() {
+
+            this.st.mainClass = 'mfp-zoom-out';
+            $('body').addClass('mfp-open');
+        },
+        beforeClose: function beforeClose() {
+
+            $('body').removeClass('mfp-open');
+        }
+
+    }
+
+});
+
 var botes = $('.fleet-container #bl-main').children();
 
 for (var index = 0; index < botes.length; index++) {
