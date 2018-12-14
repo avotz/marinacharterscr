@@ -61,10 +61,10 @@
 			));
 			?>
          <div class="nav-social">
-              <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-              <a href="#"><i class="fab fa-google-plus"></i></a>
-              <a href="#"><i class="fab fa-youtube"></i></a>
+              <a href="https://facebook.com/marinaCharterCR" target="_blank"><i class="fab fa-facebook"></i></a>
+              <a href="https://twitter.com/MarinaCharterCR" target="_blank"><i class="fab fa-twitter"></i></a>
+              <!-- <a href="#"><i class="fab fa-google-plus"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a> -->
 		</div>
 		<div class="copy">
 			<div class="payment-icons">
