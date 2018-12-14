@@ -24,6 +24,14 @@ html,body{
 	position: relative;
     color:#3b3b3b;
     font-family: 'Lato', sans-serif;
+    height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+.main {
+  flex: 1 0 auto;
 }
 hr{
     margin: 25px auto;
@@ -422,6 +430,29 @@ body.nav-is-open {
     }
 }
 
+.partners{
+    margin-top: 1rem;
+    padding: 1.5rem 0;
+    text-align: center;
+    background-color: #ddd;
+    // position: absolute;
+    // left: 0;
+    // right: 0;
+    // bottom: 0;
+    flex-shrink: 0;
+    .partners__link{
+        display: inline-block;
+        vertical-align: middle;
+        width: 150px;
+    }
+}
+.payment-icons{
+    text-align: right;
+    padding-top: .5rem;
+    img{
+        max-width: 180px;
+    }
+}
 
 @import "wc";
 @import "fleet";

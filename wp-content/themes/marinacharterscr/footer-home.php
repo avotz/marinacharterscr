@@ -10,16 +10,8 @@
  */
 
 ?>
-<?php if(!is_woocommerce()) : ?>
-<div class="partners">
-    <div class="inner">
-    
-    <?php dynamic_sidebar('partners'); ?>
-    </div>
 
-</div>
-<?php endif; ?>
-
+	
 
 <?php wp_footer(); ?>
 

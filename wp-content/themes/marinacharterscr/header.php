@@ -65,6 +65,11 @@
               <a href="#"><i class="fab fa-twitter"></i></a>
               <a href="#"><i class="fab fa-google-plus"></i></a>
               <a href="#"><i class="fab fa-youtube"></i></a>
-            </div>
+		</div>
+		<div class="copy">
+			<div class="payment-icons">
+				<img src="<?php echo get_template_directory_uri(); ?>/img/iconos-pago.jpg" alt="Pagos">
+			</div>
+		</div>
         
     </div>
