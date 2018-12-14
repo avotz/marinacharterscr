@@ -18,6 +18,34 @@
 			the_title( '<h2 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
 		endif;
 
+	if (has_post_thumbnail()) :
+
+		$id = get_post_thumbnail_id($post->ID);
+	$big_url = wp_get_attachment_image_src($id, 'item-banner', true);
+	$thumb_url = wp_get_attachment_image_src($id, 'large', true);
+	?>
+          
+      	<?php if (wp_is_mobile()) { ?>
+       		<figure class="post-banner blog-banner" style="background-image: url('<?php echo $thumb_url[0] ?>');">
+				<?php if (!is_single()) : ?>
+					<a href="<?php echo get_permalink() ?>"></a>
+				
+				<?php endif; ?>
+			</figure>
+
+		<?php 
+} else { ?>
+			<figure class="post-banner blog-banner" style="background-image: url('<?php echo $big_url[0] ?>');">
+				<?php if (!is_single()) : ?>
+					<a href="<?php echo get_permalink() ?>"></a>
+				
+				<?php endif; ?>
+			</figure>
+         <?php 
+							} ?>
+
+      <?php endif; 
+
 		if ( 'post' === get_post_type() ) :
 			?>
 			<div class="entry-meta">
@@ -29,7 +57,7 @@
 		<?php endif; ?>
 	</header><!-- .entry-header -->
 
-	<?php marinacharterscr_post_thumbnail(); ?>
+	<?php /*marinacharterscr_post_thumbnail();*/ ?>
 
 	<div class="entry-content">
 		<?php
