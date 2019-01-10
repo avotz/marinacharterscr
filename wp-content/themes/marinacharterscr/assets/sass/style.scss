@@ -467,6 +467,11 @@ body.nav-is-open {
 
     }
 }
+.single-product{
+    .kk-star-ratings{
+        display: none;
+    }
+}
 @import "wc";
 @import "fleet";
 @import "blog";
