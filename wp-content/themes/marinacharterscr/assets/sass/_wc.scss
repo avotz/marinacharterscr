@@ -32,3 +32,20 @@
 .wc-bookings-date-picker .ui-datepicker td.fully_booked a, .wc-bookings-date-picker .ui-datepicker td.fully_booked span{
     background-color: rgba(0, 0, 0, 0.8) !important;
 }
+
+.wc-pao-addon{
+    display: flex;
+    text-align: right;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    .wc-pao-addon-name{
+        padding-right: .5rem;
+        padding-top: .5rem;
+    }
+    .wc-pao-addon-field{
+        padding-left: .3rem;
+    }
+    .form-row{
+        width: 60px;
+    }
+}
