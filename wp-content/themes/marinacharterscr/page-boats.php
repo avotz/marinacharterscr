@@ -115,7 +115,7 @@ get_header();
                         
                         
                     </div>
-
+                    <div class="clear"></div>
                     <div class="fleet-container-mobile">
                         <dl>
                         

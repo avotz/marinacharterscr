@@ -438,12 +438,19 @@ body.nav-is-open {
     }
 }
 
+.single-product{
+    .fleet{
+        &-container{
+             margin-bottom: 2rem
+        }
+    }
+}
 .fleet{
     &-container{
         position: relative;
-        height: 100%;
+        height: 70vh;//100%;
         color: #f2ede3;
-        margin-bottom: 2rem;
+        margin-bottom: 9rem; //2rem
     }
     &-item{
         width: 100%;
@@ -473,6 +480,7 @@ body.nav-is-open {
         display: inline-block;
         vertical-align: middle;
         width: 150px;
+        padding: .5rem;
     }
 }
 .payment-icons{
