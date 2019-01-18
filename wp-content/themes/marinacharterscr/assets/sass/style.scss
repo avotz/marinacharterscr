@@ -288,6 +288,35 @@ body.nav-is-open {
     }
             
 }
+
+.gallery{
+    &-slider{
+        .slick-arrow{
+            position: absolute;
+            top:50%;
+            transform: translate(0,-50%);
+            font-size: 2rem;
+            color:white;
+            z-index: 2;
+            cursor: pointer;
+            &.prev{
+                left:1rem;
+            }
+            &.next{
+                right:1rem;
+            }
+        }
+    }
+    &-slide{
+        background-position: center center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        width: 100%;
+        height: 40vh;
+        
+    }
+       
+}
 .section{
         text-align:center;
         background-size:  cover;
@@ -459,8 +488,8 @@ body.nav-is-open {
         top:50%;
     .adventure-by-request-link{
        
-        background-color: #33CCCC;
-        color:rgb(88, 84, 84);
+        background-color: $azul;
+        color:white;
         padding: .3rem;
         display: inline-block;
         transform: rotate(90deg)

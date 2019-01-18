@@ -88,6 +88,18 @@ $('.banner-slider').slick({
     pauseOnHover: false
 });
 
+$('.gallery-slider').slick({
+    dots: false,
+    autoplay: true,
+    speed: 500,
+    arrows: true,
+    prevArrow:'<div class="prev"><i class="fas fa-angle-left"></i></div>',
+    nextArrow: '<div class="next"><i class="fas fa-angle-right"></i></div>',
+    cssEase: 'linear',
+    fade: true,
+    pauseOnHover: false
+});
+
 $('.adventure-by-request-link').magnificPopup({
     type: 'inline',
     midClick: true,

@@ -7,7 +7,7 @@ function marinacharterscr_meta_box($meta_boxes)
     $meta_boxes[] = array(
         'id' => 'additional',
         'title' => esc_html__('Additional Information', 'marinacharterscr'),
-        'post_types' => array('boat'),
+        'post_types' => array('boat','page'),
         'context' => 'advanced',
         'priority' => 'default',
         'autosave' => false,

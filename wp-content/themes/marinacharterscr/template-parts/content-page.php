@@ -20,33 +20,25 @@
 		<?php
 		the_content();
 
-		wp_link_pages( array(
-			'before' => '<div class="page-links">' . esc_html__( 'Pages:', 'marinacharterscr' ),
-			'after'  => '</div>',
-		) );
 		?>
+
+		 <?php $images = rwmb_meta('rw_gallery', 'type=image&size=boat-thumb');
+
+		if ($images) : ?>
+            <div class="gallery-slider">
+				<?php foreach ($images as $index => $image) : ?>
+					<div class="gallery-slide" style="background-image: url('<?= $image['url'] ?>">
+					
+				    </div>
+						
+						
+				<?php endforeach; ?>
+				
+				
+			</div>
+			
+		<?php endif; ?>
 	</div><!-- .entry-content -->
 
-	<?php if ( get_edit_post_link() ) : ?>
-		<footer class="entry-footer">
-			<?php
-			edit_post_link(
-				sprintf(
-					wp_kses(
-						/* translators: %s: Name of current post. Only visible to screen readers */
-						__( 'Edit <span class="screen-reader-text">%s</span>', 'marinacharterscr' ),
-						array(
-							'span' => array(
-								'class' => array(),
-							),
-						)
-					),
-					get_the_title()
-				),
-				'<span class="edit-link">',
-				'</span>'
-			);
-			?>
-		</footer><!-- .entry-footer -->
-	<?php endif; ?>
+	
 </article><!-- #post-<?php the_ID(); ?> -->

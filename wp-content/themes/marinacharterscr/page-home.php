@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The template for displaying all pages
  *
@@ -8,7 +9,7 @@
  * different template.
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
- *
+ * Template Name: Page Home 
  * @package marinacharterscr
  */
 
