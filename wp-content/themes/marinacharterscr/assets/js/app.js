@@ -9,6 +9,7 @@ require('./vendor/boxlayout.js');
 
 let $btnMenu = $('.nav-btn-menu'),
     $menu = document.querySelector('.nav-menu .menu-item-has-children'),
+    $headerMenu = document.querySelector('.header-menu .menu-item-has-children'),
     $body = $('body');
 
 
@@ -40,6 +41,12 @@ hoverintent($menu,
         $(this).find(">.sub-menu").slideUp(200);
     }).options(opts);
 
+hoverintent($headerMenu,
+    function () {
+        $(this).find(">.sub-menu").slideDown(200);
+    }, function () {
+        $(this).find(">.sub-menu").slideUp(200);
+    }).options(opts);
 
 function isHome() {
 

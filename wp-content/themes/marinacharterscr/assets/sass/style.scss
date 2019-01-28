@@ -75,8 +75,12 @@ hr{
         &-right{
             -webkit-animation-name: fadeInRight;
             animation-name: fadeInRight;
+            .header-social{
+                padding-top:1rem;
+            }
         }
-         &-menu{
+        &-menu{
+             padding-top: 3rem;
             a{
                 color: white;
             }
@@ -138,7 +142,7 @@ body.nav-is-open {
         z-index: 3;
     }
 }
-.nav-social{
+.nav-social, .header-social{
     text-align:right;
     a{
         padding:.5rem;
@@ -227,6 +231,49 @@ body.nav-is-open {
         right: 2.2rem;
         top: 20px;
         z-index: 3;
+    }
+    &-menu{
+        display: none;
+        width: 80%;
+        vertical-align: top;
+        padding-top: 1.2rem;
+        &-ul{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            li{
+                .sub-menu {
+                    display: none;
+                    position: absolute;
+                    background-color: $azul;
+                    list-style: none;
+                    padding: .5rem;
+                }
+                
+            }
+            a{
+                color:white;
+            }
+        }
+    }
+    &-social{
+        display: none;
+    }
+}
+@media screen and (min-width: 1024px){
+    .header{
+        &-menu{
+            display:inline-block;
+        }
+        &-right{
+            .header-social{
+                display: block;
+                //padding-top:1rem;
+            }
+            .btn-menu{
+                display: none;
+            }
+        }
     }
 }
 @media screen and (min-width: 768px){

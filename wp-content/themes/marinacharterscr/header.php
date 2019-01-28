@@ -36,9 +36,24 @@
 				
 				<img src="<?php echo get_template_directory_uri(); ?>/img/logo.png" alt="Green Life Tours">
 			</a>
+ 			<?php
+			wp_nav_menu(array(
+				'theme_location' => 'home-menu',
+				'menu_id' => 'header-menu',
+				'container' => 'nav',
+				'container_class' => 'header-menu',
+				'container_id' => '',
+				'menu_class' => 'header-menu-ul',
+			));
+			?>
 
 			<div class="header-right flex-container-sb animated">
-             
+				<div class="header-social">
+					<a href="https://facebook.com/marinaCharterCR" target="_blank"><i class="fab fa-facebook"></i></a>
+					<a href="https://twitter.com/MarinaCharterCR" target="_blank"><i class="fab fa-twitter"></i></a>
+					<a href="https://www.instagram.com/marinachartercr" target="_blank"><i class="fab fa-instagram" ></i></a>
+					
+				</div>
                 <div class="btn-menu">
                    <button id="header-btn-menu" class="nav-btn-menu">
                        <i class="nav-btn-menu-icon fas fa-bars"></i>
