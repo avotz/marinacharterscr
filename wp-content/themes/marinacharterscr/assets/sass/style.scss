@@ -71,6 +71,8 @@ hr{
         &-logo{
             -webkit-animation-name: fadeInLeft;
             animation-name: fadeInLeft;
+            position: absolute;
+            left: 2rem;
         }
         &-right{
             -webkit-animation-name: fadeInRight;
@@ -224,6 +226,8 @@ body.nav-is-open {
         color:white;
         display: inline-block;
         max-width: 90px;
+        position: absolute;
+        left:2rem;
 
     }
     &-right{
@@ -237,6 +241,7 @@ body.nav-is-open {
         width: 80%;
         vertical-align: top;
         padding-top: 1.2rem;
+        padding-left: 10rem;
         &-ul{
             display: flex;
             flex-wrap: wrap;
@@ -497,7 +502,7 @@ body.nav-is-open {
         position: relative;
         height: 70vh;//100%;
         color: #f2ede3;
-        margin-bottom: 18rem; //2rem
+        margin-bottom: 58rem; //2rem
     }
     &-item{
         width: 100%;

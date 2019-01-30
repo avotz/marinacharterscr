@@ -5,7 +5,7 @@
 	height: 100%;
 	overflow: hidden;
 	&.allitems{
-		height: 125%;
+		height: 250%;
 		overflow: initial;
 		position: static;
 	}
@@ -19,7 +19,7 @@
 		height: 25%;
 	}
 	&.allitems{
-		height: 25%;
+		height: 50%;
 	}
 	
 }
@@ -46,7 +46,7 @@
 		top: 25%;
 	}
 	&.allitems{
-		top: 25%;//9.09%;
+		top: 50%;//9.09%;
 	}
 }
 
@@ -58,7 +58,7 @@
 		top: 25%;
 	}
 	&.allitems{
-		top: 25%;//9.09%;
+		top: 50%;//9.09%;
 	}
 }
 .bl-main > section:nth-child(5) {
@@ -69,7 +69,7 @@
 		top: 50%;
 	}
 	&.allitems{
-		top: 50%;//18.18%;
+		top: 100%;//18.18%;
 	}
 }
 
@@ -81,7 +81,7 @@
 		top: 50%;
 	}
 	&.allitems{
-		top: 50%;//18.18%;
+		top: 100%;//18.18%;
 	}
 }
 .bl-main > section:nth-child(7) {
@@ -92,7 +92,7 @@
 		top: 50%;
 	}
 	&.allitems{
-		top: 75%;//27.27%;
+		top: 150%;//27.27%;
 	}
 }
 .bl-main > section:nth-child(8) {
@@ -103,7 +103,7 @@
 		top: 50%;
 	}
 	&.allitems{
-		top: 75%;//27.27%;
+		top: 150%;//27.27%;
 	}
 }
 .bl-main > section:nth-child(9) {
@@ -114,7 +114,7 @@
 		top: 50%;
 	}
 	&.allitems{
-		top: 100%;//36.36%;
+		top: 200%;//36.36%;
 	}
 }
 .bl-main > section:nth-child(10) {
@@ -125,7 +125,7 @@
 		top: 50%;
 	}
 	&.allitems{
-		top: 100%;//36.36%;
+		top: 200%;//36.36%;
 	}
 }
 .bl-main > section:nth-child(11) {
@@ -136,7 +136,7 @@
 		top: 50%;
 	}
 	&.allitems{
-		top: 125%;//45.45%;
+		top: 250%;//45.45%;
 	}
 }
 
