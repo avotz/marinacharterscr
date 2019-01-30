@@ -18,8 +18,8 @@ get_header();
 
 	<div class="main">
     	<div class="inner">
-			<!-- <div class="blog-container flex-container-sb">
-				<div class="blog-info"> -->
+			<div class="blog-container flex-container-sb">
+				<div class="blog-info">
 					<?php
 					while ( have_posts() ) :
 						the_post();
@@ -170,10 +170,10 @@ get_header();
                         </dl>
                     </div>
 				</div>
-				<!-- <div class="blog-sidebar">
+				<div class="blog-sidebar">
 					<?php get_sidebar('contact'); ?>
-				</div> -->
-			<!-- </div> -->
+				</div> 
+			 </div>
 
 		</div><!-- #main -->
 	</div><!-- #primary -->
